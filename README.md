@@ -84,6 +84,8 @@ The dev-time orchestration mirrors the product. A build manager fanned out paral
 worker subagents, each paired with a reviewer subagent that ran the oracle tests.
 Manager, workers, QA. The same shape as the crew that runs the office.
 
+![Same shape, two levels](static/dev-orchestration.svg)
+
 Full write-up: [docs/HOW-IT-WAS-BUILT.md](docs/HOW-IT-WAS-BUILT.md).
 
 ## How to run

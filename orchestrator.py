@@ -144,6 +144,84 @@ def repaired_schedule() -> Schedule:
 # The scenario
 # --------------------------------------------------------------------------- #
 
+def _estimator_step(job, feed, live):
+    """Estimator. Live agent self-corrects on Opus (org credits); else scripted."""
+    if live:
+        try:
+            from agents.live_workers import live_estimate
+            feed.add("estimator", Status.WORKING, "Pricing the window add, then checking it.")
+            est, attempts = live_estimate(job)
+            had_fix = False
+            for v in attempts:
+                if not v["ok"]:
+                    had_fix = True
+                    feed.add("estimator", Status.FLAGGED,
+                             f"Checker caught it: {v['violations'][0]['detail']}. Fixing.")
+            feed.add("estimator", Status.REPAIRED if had_fix else Status.DONE,
+                     f"Clean estimate: subtotal ${est.subtotal:,.0f}, ${est.total:,.0f} with "
+                     f"markup. Verified by the checker.",
+                     document={"type": "estimate", **_doc(est),
+                               "subtotal": est.subtotal, "total": est.total})
+            return est
+        except Exception:
+            feed.add("estimator", Status.WORKING, "(falling back to the verified draft)")
+
+    est_bad = first_pass_estimate()
+    vb = check_estimate(est_bad, job)
+    feed.add("estimator", Status.WORKING,
+             f"Priced the window add: framing, window unit, flashing, drywall patch, paint. "
+             f"Draft subtotal ${est_bad.subtotal:,.0f}. Running it past the checker.")
+    if not vb["ok"]:
+        feed.add("estimator", Status.FLAGGED,
+                 f"Checker caught it: {vb['violations'][0]['detail']}. I double-counted the "
+                 f"framing. Fixing.")
+    est = repaired_estimate()
+    assert check_estimate(est, job)["ok"]
+    feed.add("estimator", Status.REPAIRED,
+             f"Fixed. Clean change-order estimate: subtotal ${est.subtotal:,.0f}, "
+             f"with markup ${est.total:,.0f}. Verified by the checker.",
+             document={"type": "estimate", **_doc(est),
+                       "subtotal": est.subtotal, "total": est.total})
+    return est
+
+
+def _scheduler_step(job, est, feed, live):
+    """Scheduler. Live agent self-corrects on Opus (org credits); else scripted."""
+    if live:
+        try:
+            from agents.live_workers import live_schedule
+            feed.add("scheduler", Status.WORKING, "Working the window into the schedule.")
+            sch, attempts = live_schedule(job, est, _baseline_tasks())
+            had_fix = False
+            for v in attempts:
+                if not v["ok"]:
+                    had_fix = True
+                    feed.add("scheduler", Status.FLAGGED,
+                             f"Checker caught it: {v['violations'][0]['detail']}. Re-sequencing.")
+            feed.add("scheduler", Status.REPAIRED if had_fix else Status.DONE,
+                     f"Clean schedule. Job finishes in {sch.duration_days} days. Verified.",
+                     document={"type": "schedule", **_doc(sch), "duration_days": sch.duration_days})
+            return sch
+        except Exception:
+            feed.add("scheduler", Status.WORKING, "(falling back to the verified draft)")
+
+    sch_bad = first_pass_schedule()
+    sb = check_schedule(sch_bad, est, job)
+    feed.add("scheduler", Status.WORKING,
+             "Worked the window into the schedule and checked the trade sequence.")
+    if not sb["ok"]:
+        feed.add("scheduler", Status.FLAGGED,
+                 f"Checker caught it: {sb['violations'][0]['detail']}. Can't frame a new "
+                 f"opening after the walls are closed. Re-sequencing.")
+    sch = repaired_schedule()
+    assert check_schedule(sch, est, job)["ok"]
+    feed.add("scheduler", Status.REPAIRED,
+             f"Fixed. Window framing now lands before drywall. Job finishes in "
+             f"{sch.duration_days} days, +2 from the change. Verified.",
+             document={"type": "schedule", **_doc(sch), "duration_days": sch.duration_days})
+    return sch
+
+
 def run_change_order(message: str = "", live: bool = False) -> dict:
     """Run the change-order scenario. Returns events + documents + final artifacts."""
     feed = Feed()
@@ -164,41 +242,11 @@ def run_change_order(message: str = "", live: bool = False) -> dict:
              "Logged the field change during the drywall phase. It needs pricing and a "
              "schedule impact before we can issue a change order.")
 
-    # 3. Estimator: first pass -> oracle flags -> repair
-    est_bad = first_pass_estimate()
-    vb = check_estimate(est_bad, job)
-    feed.add("estimator", Status.WORKING,
-             f"Priced the window add: framing, window unit, flashing, drywall patch, paint. "
-             f"Draft subtotal ${est_bad.subtotal:,.0f}. Running it past the checker.")
-    if not vb["ok"]:
-        feed.add("estimator", Status.FLAGGED,
-                 f"Checker caught it: {vb['violations'][0]['detail']}. I double-counted the "
-                 f"framing. Fixing.")
-    est = repaired_estimate()
-    ve = check_estimate(est, job)
-    assert ve["ok"], ve
-    feed.add("estimator", Status.REPAIRED,
-             f"Fixed. Clean change-order estimate: subtotal ${est.subtotal:,.0f}, "
-             f"with markup ${est.total:,.0f}. Verified by the checker.",
-             document={"type": "estimate", **_doc(est),
-                       "subtotal": est.subtotal, "total": est.total})
+    # 3. Estimator: first pass -> oracle flags -> repair (live agent or scripted)
+    est = _estimator_step(job, feed, live)
 
-    # 4. Scheduler: first pass -> oracle flags -> repair
-    sch_bad = first_pass_schedule()
-    sb = check_schedule(sch_bad, est, job)
-    feed.add("scheduler", Status.WORKING,
-             "Worked the window into the schedule and checked the trade sequence.")
-    if not sb["ok"]:
-        feed.add("scheduler", Status.FLAGGED,
-                 f"Checker caught it: {sb['violations'][0]['detail']}. Can't frame a new "
-                 f"opening after the walls are closed. Re-sequencing.")
-    sch = repaired_schedule()
-    vs = check_schedule(sch, est, job)
-    assert vs["ok"], vs
-    feed.add("scheduler", Status.REPAIRED,
-             f"Fixed. Window framing now lands before drywall. Job finishes in "
-             f"{sch.duration_days} days, +2 from the change. Verified.",
-             document={"type": "schedule", **_doc(sch), "duration_days": sch.duration_days})
+    # 4. Scheduler: first pass -> oracle flags -> repair (live agent or scripted)
+    sch = _scheduler_step(job, est, feed, live)
 
     # 5. Office Admin: change order + invoice + reminder
     co = ChangeOrder("CO #001", job.id,

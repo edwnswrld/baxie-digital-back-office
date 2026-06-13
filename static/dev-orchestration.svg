@@ -1,0 +1,107 @@
+<svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'Archivo', sans-serif">
+  <title>Same shape, two levels: how it was built mirrors what it runs</title>
+  <desc>The dev crew (Orchestrator, Build Manager, parallel workers with QA reviewers) has the same shape as the product crew (Owner, Office Manager, worker agents gated by the oracle).</desc>
+
+  <rect x="0" y="0" width="1000" height="500" fill="#F4EFE3"/>
+
+  <!-- header -->
+  <text x="40" y="44" font-family="'JetBrains Mono', monospace" font-size="13" letter-spacing="3" fill="#FF5A1F">SAME SHAPE, TWO LEVELS</text>
+  <text x="40" y="76" font-family="'Archivo Black','Archivo',sans-serif" font-weight="800" font-size="26" fill="#161616">How it was built mirrors what it runs</text>
+
+  <!-- center divider -->
+  <line x1="500" y1="110" x2="500" y2="470" stroke="#C9BFA6" stroke-width="2" stroke-dasharray="3 6"/>
+  <circle cx="500" cy="290" r="22" fill="#161616"/>
+  <text x="500" y="297" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" fill="#F4EFE3">=</text>
+
+  <!-- ============ LEFT: HOW IT WAS BUILT ============ -->
+  <text x="60" y="128" font-family="'JetBrains Mono',monospace" font-size="12" letter-spacing="2" fill="#2E2A22">HOW IT WAS BUILT</text>
+
+  <!-- L1 orchestrator -->
+  <rect x="135" y="142" width="230" height="46" rx="6" fill="#161616"/>
+  <text x="250" y="164" text-anchor="middle" font-weight="700" font-size="15" fill="#F4EFE3">Orchestrator</text>
+  <text x="250" y="180" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#E8DFC9">the human lead, owns the spec</text>
+
+  <line x1="250" y1="188" x2="250" y2="214" stroke="#161616" stroke-width="2"/>
+
+  <!-- L2 build manager -->
+  <rect x="135" y="214" width="230" height="46" rx="6" fill="#FBF7EC" stroke="#FF5A1F" stroke-width="2.5"/>
+  <text x="250" y="236" text-anchor="middle" font-weight="700" font-size="15" fill="#161616">Build Manager</text>
+  <text x="250" y="252" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E2A22">ultracode workflow, fans out</text>
+
+  <line x1="250" y1="260" x2="250" y2="288" stroke="#161616" stroke-width="2"/>
+  <line x1="90" y1="288" x2="410" y2="288" stroke="#161616" stroke-width="2"/>
+
+  <!-- L3 workers (parallel) -->
+  <g font-size="12" font-weight="700" fill="#161616" text-anchor="middle">
+    <g>
+      <line x1="115" y1="288" x2="115" y2="306" stroke="#161616" stroke-width="2"/>
+      <rect x="78" y="306" width="74" height="44" rx="5" fill="#FBF7EC" stroke="#161616" stroke-width="1.5"/>
+      <text x="115" y="332">Oracles</text>
+    </g>
+    <g>
+      <line x1="205" y1="288" x2="205" y2="306" stroke="#161616" stroke-width="2"/>
+      <rect x="168" y="306" width="74" height="44" rx="5" fill="#FBF7EC" stroke="#161616" stroke-width="1.5"/>
+      <text x="205" y="332">Fixtures</text>
+    </g>
+    <g>
+      <line x1="295" y1="288" x2="295" y2="306" stroke="#161616" stroke-width="2"/>
+      <rect x="258" y="306" width="74" height="44" rx="5" fill="#FBF7EC" stroke="#161616" stroke-width="1.5"/>
+      <text x="295" y="332">Workspace</text>
+    </g>
+    <g>
+      <line x1="385" y1="288" x2="385" y2="306" stroke="#161616" stroke-width="2"/>
+      <rect x="348" y="306" width="74" height="44" rx="5" fill="#FBF7EC" stroke="#161616" stroke-width="1.5"/>
+      <text x="385" y="332">Docs</text>
+    </g>
+  </g>
+
+  <!-- L4 QA -->
+  <rect x="78" y="402" width="344" height="40" rx="6" fill="#161616"/>
+  <text x="250" y="421" text-anchor="middle" font-weight="700" font-size="12" fill="#F4EFE3">QA reviewer per worker</text>
+  <text x="250" y="436" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#E8DFC9">runs the deterministic oracle tests</text>
+
+  <!-- ============ RIGHT: WHAT IT RUNS ============ -->
+  <text x="635" y="128" font-family="'JetBrains Mono',monospace" font-size="12" letter-spacing="2" fill="#2E2A22">WHAT IT RUNS</text>
+
+  <rect x="635" y="142" width="230" height="46" rx="6" fill="#161616"/>
+  <text x="750" y="164" text-anchor="middle" font-weight="700" font-size="15" fill="#F4EFE3">Owner</text>
+  <text x="750" y="180" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#E8DFC9">runs the jobsite, signs the checks</text>
+
+  <line x1="750" y1="188" x2="750" y2="214" stroke="#161616" stroke-width="2"/>
+
+  <rect x="635" y="214" width="230" height="46" rx="6" fill="#FBF7EC" stroke="#FF5A1F" stroke-width="2.5"/>
+  <text x="750" y="236" text-anchor="middle" font-weight="700" font-size="15" fill="#161616">Office Manager</text>
+  <text x="750" y="252" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E2A22">one contact, routes the crew</text>
+
+  <line x1="750" y1="260" x2="750" y2="288" stroke="#161616" stroke-width="2"/>
+  <line x1="590" y1="288" x2="910" y2="288" stroke="#161616" stroke-width="2"/>
+
+  <g font-size="12" font-weight="700" fill="#161616" text-anchor="middle">
+    <g>
+      <line x1="615" y1="288" x2="615" y2="306" stroke="#161616" stroke-width="2"/>
+      <rect x="578" y="306" width="74" height="44" rx="5" fill="#FBF7EC" stroke="#161616" stroke-width="1.5"/>
+      <text x="615" y="332">Estimator</text>
+    </g>
+    <g>
+      <line x1="705" y1="288" x2="705" y2="306" stroke="#161616" stroke-width="2"/>
+      <rect x="668" y="306" width="74" height="44" rx="5" fill="#FBF7EC" stroke="#161616" stroke-width="1.5"/>
+      <text x="705" y="332">Scheduler</text>
+    </g>
+    <g>
+      <line x1="795" y1="288" x2="795" y2="306" stroke="#161616" stroke-width="2"/>
+      <rect x="758" y="306" width="74" height="44" rx="5" fill="#FBF7EC" stroke="#161616" stroke-width="1.5"/>
+      <text x="795" y="332">Coord.</text>
+    </g>
+    <g>
+      <line x1="885" y1="288" x2="885" y2="306" stroke="#161616" stroke-width="2"/>
+      <rect x="848" y="306" width="74" height="44" rx="5" fill="#FBF7EC" stroke="#161616" stroke-width="1.5"/>
+      <text x="885" y="332">Admin</text>
+    </g>
+  </g>
+
+  <rect x="578" y="402" width="344" height="40" rx="6" fill="#161616"/>
+  <text x="750" y="421" text-anchor="middle" font-weight="700" font-size="12" fill="#F4EFE3">Deterministic oracle gate</text>
+  <text x="750" y="436" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#E8DFC9">a wrong number cannot ship</text>
+
+  <text x="500" y="486" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E2A22">manager → workers → QA, the same crew at both levels</text>
+</svg>
