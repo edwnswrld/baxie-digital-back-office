@@ -473,6 +473,8 @@
         </div>
       </section>
 
+      <div id="summary"></div>
+
       <div class="section-head">
         <h2>Activity Feed</h2>
         <span class="eyebrow" id="feed-count"></span>
@@ -511,6 +513,7 @@
     chips: document.getElementById("chips"),
     feed: document.getElementById("feed"),
     feedCount: document.getElementById("feed-count"),
+    summary: document.getElementById("summary"),
     docs: document.getElementById("docs"),
     scoreboard: document.getElementById("scoreboard"),
     scoreboardText: document.getElementById("scoreboard-text"),
@@ -538,9 +541,55 @@
   function clearFeed() {
     els.feed.innerHTML = "";
     els.docs.innerHTML = "";
+    if (els.summary) els.summary.innerHTML = "";
     docsRendered = 0;
     els.scoreboard.style.display = "none";
     els.feedCount.textContent = "";
+  }
+
+  function sty(node, css) { node.style.cssText = css; return node; }
+
+  // One-glance headline so the GC sees the outcome without reading the feed.
+  function renderSummary(s) {
+    if (!s || !els.summary) return;
+    els.summary.innerHTML = "";
+    var INK = "#161616", OR = "#FF5A1F", PS = "#FBF7EC", RULE = "#C9BFA6", G6 = "#2E2A22";
+    var wrap = sty(el("div"), "background:" + PS + ";border:1.5px solid " + INK +
+      ";border-radius:10px;padding:18px 20px;margin:18px 0;");
+    wrap.appendChild(sty(el("div", null, "WHAT YOUR CREW DID"),
+      "font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:" + OR + ";margin-bottom:6px;"));
+    wrap.appendChild(sty(el("div", null, s.headline || "Change handled"),
+      "font-family:'Archivo Black','Archivo',sans-serif;font-size:20px;color:" + INK + ";margin-bottom:14px;"));
+    var row = sty(el("div"), "display:flex;flex-wrap:wrap;gap:26px;align-items:flex-end;");
+    function stat(label, before, after, delta) {
+      var b = el("div");
+      b.appendChild(sty(el("div", null, label),
+        "font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:" + G6 + ";text-transform:uppercase;margin-bottom:4px;"));
+      var line = el("div");
+      line.appendChild(sty(el("span", null, before), "color:" + G6 + ";text-decoration:line-through;font-size:14px;"));
+      line.appendChild(sty(el("span", null, "  →  "), "color:" + RULE + ";"));
+      line.appendChild(sty(el("span", null, after), "font-weight:800;font-size:18px;color:" + INK + ";"));
+      line.appendChild(sty(el("span", null, "  " + delta), "color:" + OR + ";font-weight:700;font-size:13px;"));
+      b.appendChild(line);
+      return b;
+    }
+    row.appendChild(stat("Project cost", money(s.cost_before), money(s.cost_after), "+" + money(s.cost_delta)));
+    row.appendChild(stat("Timeline", s.days_before + " days", s.days_after + " days", "+" + s.days_delta + " days"));
+    wrap.appendChild(row);
+    if (s.needs_signature) {
+      var act = sty(el("div"), "margin-top:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;");
+      var btn = sty(el("button", null, "Review & sign the change order"),
+        "background:" + OR + ";color:" + PS + ";border:none;border-radius:7px;padding:10px 16px;font-weight:700;font-family:'Archivo',sans-serif;cursor:pointer;font-size:13px;");
+      btn.addEventListener("click", function () {
+        var co = document.querySelector('[data-doc="change_order"]');
+        if (co) co.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+      act.appendChild(btn);
+      act.appendChild(sty(el("span", null, "your signature first, then the client's"),
+        "color:" + G6 + ";font-size:12px;"));
+      wrap.appendChild(act);
+    }
+    els.summary.appendChild(wrap);
   }
 
   // -- activity feed cards --------------------------------------------- //
@@ -589,6 +638,7 @@
 
     var kind = docKind(d);
     var doc = el("div", "doc");
+    doc.setAttribute("data-doc", kind.toLowerCase().replace(/ /g, "_"));
 
     var banner = el("div", "doc-banner");
     banner.appendChild(el("span", "doc-kind", kind));
@@ -609,18 +659,83 @@
   }
 
   function renderChangeOrder(body, d) {
+    var INK = "#161616", OR = "#FF5A1F", PS = "#FBF7EC", RULE = "#C9BFA6", G6 = "#2E2A22", OK = "#2F7A3E";
+
+    // project + client header (so the GC and client can both review)
+    if (d.project_name || d.client_name) {
+      var meta = sty(el("div"), "font-size:12px;color:" + G6 + ";line-height:1.55;margin-bottom:10px;");
+      meta.innerHTML =
+        "<b>" + (d.project_name || "") + "</b><br>" +
+        (d.project_address ? d.project_address + "<br>" : "") +
+        (d.client_name ? "For: " + d.client_name + " &lt;" + (d.client_email || "") + "&gt;<br>" : "") +
+        (d.date || "");
+      body.appendChild(meta);
+    }
+    if (d.window_size) {
+      body.appendChild(sty(el("div", null, "Scope: " + d.window_size),
+        "font-weight:700;font-size:13px;color:" + INK + ";margin-bottom:4px;"));
+    }
     if (d.description) body.appendChild(el("div", "doc-desc", d.description));
 
-    var grid = el("div", "doc-grid");
-    grid.appendChild(stat("Cost change", money(d.cost_delta), true));
-    var days = Number(d.schedule_delta_days) || 0;
-    grid.appendChild(stat("Schedule", (days >= 0 ? "+" : "") + days + (Math.abs(days) === 1 ? " day" : " days")));
-    body.appendChild(grid);
+    // line-item breakdown
+    var items = Array.isArray(d.line_items) ? d.line_items : [];
+    if (items.length) {
+      var lines = el("div", "doc-lines");
+      items.forEach(function (it) {
+        var rrow = el("div", "doc-line");
+        rrow.appendChild(el("span", null, it.desc || "Item"));
+        rrow.appendChild(el("span", "amt", money(it.amount)));
+        lines.appendChild(rrow);
+      });
+      body.appendChild(lines);
+    }
+    var total = el("div", "doc-total");
+    total.appendChild(el("span", null, "Change order total"));
+    total.appendChild(el("span", "amt", money(d.cost_delta)));
+    body.appendChild(total);
 
-    var status = (d.status || "pending_signature").toLowerCase();
-    var label = status === "signed" ? "Signed" : "Pending signature";
-    var chip = el("span", "doc-status " + (status === "signed" ? "signed" : "pending"), label);
-    body.appendChild(chip);
+    // before -> after impact
+    if (d.cost_after) {
+      var ba = sty(el("div"), "margin-top:10px;font-size:12px;color:" + G6 + ";");
+      ba.innerHTML = "Project total: <s>" + money(d.cost_before) + "</s> <b>" + money(d.cost_after) +
+        "</b> &nbsp;·&nbsp; Timeline: <s>" + d.days_before + " days</s> <b>" + d.days_after + " days</b>";
+      body.appendChild(ba);
+    }
+
+    // e-signature: contractor signs, then client approves
+    var sig = sty(el("div"), "margin-top:14px;border-top:1px solid " + RULE + ";padding-top:12px;");
+    function renderSig() {
+      sig.innerHTML = "";
+      if (!d.status || d.status === "draft") {
+        var b = sty(el("button", null, "✍  Sign as contractor"),
+          "background:" + INK + ";color:" + PS + ";border:none;border-radius:6px;padding:9px 14px;font-weight:700;cursor:pointer;font-family:'Archivo',sans-serif;font-size:12px;");
+        b.addEventListener("click", function () {
+          d.status = "contractor_signed";
+          d.contractor_signature = "Signed electronically · " + new Date().toLocaleString();
+          renderSig();
+        });
+        sig.appendChild(b);
+        return;
+      }
+      sig.appendChild(sty(el("div", null, "✓ Signed by contractor"),
+        "color:" + OK + ";font-weight:700;font-size:13px;"));
+      sig.appendChild(sty(el("div", null, d.contractor_signature || ""),
+        "font-family:'JetBrains Mono',monospace;font-size:10px;color:" + G6 + ";margin-bottom:10px;"));
+      if (d.status === "client_approved") {
+        sig.appendChild(sty(el("div", null, "✓ Approved by client — " + (d.client_name || "")),
+          "color:" + OK + ";font-weight:700;font-size:13px;"));
+      } else {
+        sig.appendChild(sty(el("div", null, "Sent to " + (d.client_name || "client") +
+          " (" + (d.client_email || "") + ") for approval"),
+          "color:" + G6 + ";font-size:12px;margin-bottom:6px;"));
+        var ab = sty(el("button", null, "Mark client approved"),
+          "background:" + PS + ";color:" + INK + ";border:1.5px solid " + INK + ";border-radius:6px;padding:7px 12px;font-weight:700;cursor:pointer;font-family:'Archivo',sans-serif;font-size:12px;");
+        ab.addEventListener("click", function () { d.status = "client_approved"; renderSig(); });
+        sig.appendChild(ab);
+      }
+    }
+    renderSig();
+    body.appendChild(sig);
   }
 
   function renderInvoice(body, d) {
@@ -653,23 +768,32 @@
     body.appendChild(action);
   }
 
+  function updatedBadge(body, d) {
+    if (d && d.updated) {
+      body.appendChild(sty(el("span", null, "● Updated just now"),
+        "display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;color:#FF5A1F;margin-bottom:8px;"));
+    }
+  }
+
   function renderEstimate(body, d) {
+    updatedBadge(body, d);
     if (d.label) body.appendChild(el("div", "doc-desc", d.label));
     var grid = el("div", "doc-grid");
     grid.appendChild(stat("Line items", String(Array.isArray(d.lines) ? d.lines.length : 0)));
     if (d.subtotal != null) grid.appendChild(stat("Subtotal", money(d.subtotal)));
     if (d.total != null) grid.appendChild(stat("Total", money(d.total), true));
     body.appendChild(grid);
-    body.appendChild(el("span", "doc-status signed", "Checker verified"));
+    body.appendChild(el("span", "doc-status signed", "Double-checked"));
   }
 
   function renderSchedule(body, d) {
+    updatedBadge(body, d);
     if (d.label) body.appendChild(el("div", "doc-desc", d.label));
     var grid = el("div", "doc-grid");
     grid.appendChild(stat("Tasks", String(Array.isArray(d.tasks) ? d.tasks.length : 0)));
-    if (d.duration_days != null) grid.appendChild(stat("Duration", d.duration_days + " days", true));
+    if (d.duration_days != null) grid.appendChild(stat("Timeline", d.duration_days + " days", true));
     body.appendChild(grid);
-    body.appendChild(el("span", "doc-status signed", "Checker verified"));
+    body.appendChild(el("span", "doc-status signed", "Double-checked"));
   }
 
   function stat(k, v, accent) {
@@ -737,6 +861,7 @@
     })
     .then(function (data) {
       els.feed.innerHTML = "";
+      renderSummary(data.summary);
       var events = (data && data.events) || [];
       if (!events.length) {
         showError("No activity came back from the crew.");

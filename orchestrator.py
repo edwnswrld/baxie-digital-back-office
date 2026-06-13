@@ -33,6 +33,20 @@ CREW = {
     "office_admin": ("Rosa", "Office Admin"),
 }
 
+# Seeded project the change comes into, so the GC sees the before -> after.
+PROJECT = {
+    "name": "Kitchen Remodel - 1423 Oak St",
+    "address": "1423 Oak St, Vallejo, CA (synthetic)",
+    "client_name": "Jordan Avery",
+    "client_email": "jordan.avery@example.com",
+    "cost_before": 42000.0,   # current contract value
+    "days_before": 25,        # current schedule length
+}
+
+# The change is specified, not fabricated: a code-compliant egress window.
+WINDOW_SIZE = '36" W x 48" H egress window'
+CO_DATE = "June 13, 2026"
+
 
 def _doc(obj) -> dict:
     """Serialize a dataclass document, enums -> values."""
@@ -169,19 +183,17 @@ def _estimator_step(job, feed, live):
     est_bad = first_pass_estimate()
     vb = check_estimate(est_bad, job)
     feed.add("estimator", Status.WORKING,
-             f"Priced the window add: framing, window unit, flashing, drywall patch, paint. "
-             f"Draft subtotal ${est_bad.subtotal:,.0f}. Running it past the checker.")
+             "Pricing the window: framing, the unit, flashing, drywall patch, paint.")
     if not vb["ok"]:
         feed.add("estimator", Status.FLAGGED,
-                 f"Checker caught it: {vb['violations'][0]['detail']}. I double-counted the "
-                 f"framing. Fixing.")
+                 "My own double-check caught a mistake: I counted the framing labor twice. "
+                 "Fixing it.")
     est = repaired_estimate()
     assert check_estimate(est, job)["ok"]
     feed.add("estimator", Status.REPAIRED,
-             f"Fixed. Clean change-order estimate: subtotal ${est.subtotal:,.0f}, "
-             f"with markup ${est.total:,.0f}. Verified by the checker.",
-             document={"type": "estimate", **_doc(est),
-                       "subtotal": est.subtotal, "total": est.total})
+             f"Fixed and double-checked. The window adds ${est.total:,.0f}.",
+             document={"type": "estimate", **_doc(est), "subtotal": est.subtotal,
+                       "total": est.total, "updated": True})
     return est
 
 
@@ -207,18 +219,19 @@ def _scheduler_step(job, est, feed, live):
 
     sch_bad = first_pass_schedule()
     sb = check_schedule(sch_bad, est, job)
-    feed.add("scheduler", Status.WORKING,
-             "Worked the window into the schedule and checked the trade sequence.")
+    feed.add("scheduler", Status.WORKING, "Fitting the window into the timeline.")
     if not sb["ok"]:
         feed.add("scheduler", Status.FLAGGED,
-                 f"Checker caught it: {sb['violations'][0]['detail']}. Can't frame a new "
-                 f"opening after the walls are closed. Re-sequencing.")
+                 "My check caught an out-of-order step: I had the window framing after the "
+                 "drywall, which can't happen. Putting framing first.")
     sch = repaired_schedule()
     assert check_schedule(sch, est, job)["ok"]
+    days_after = PROJECT["days_before"] + 2
     feed.add("scheduler", Status.REPAIRED,
-             f"Fixed. Window framing now lands before drywall. Job finishes in "
-             f"{sch.duration_days} days, +2 from the change. Verified.",
-             document={"type": "schedule", **_doc(sch), "duration_days": sch.duration_days})
+             f"Fixed. Framing now comes before drywall. Timeline goes from "
+             f"{PROJECT['days_before']} to {days_after} days.",
+             document={"type": "schedule", **_doc(sch),
+                       "duration_days": days_after, "updated": True})
     return sch
 
 
@@ -232,45 +245,67 @@ def run_change_order(message: str = "", live: bool = False) -> dict:
         feed.add("office_manager", Status.DECLINED,
                  f'"{message}" is outside the back office. I handle estimating, '
                  f'scheduling, and paperwork for your jobs. Want me to take that off your plate?')
-        return _result(feed, None, None, {})
+        return _result(feed, None, None, {}, None)
     feed.add("office_manager", Status.DELEGATING,
-             "Got it: homeowner wants to add an egress window on the Oak St kitchen. "
-             "Looping in Diego, Maya, and Sam, then Rosa for the paperwork.")
+             f"On it. Adding a {WINDOW_SIZE} to the {PROJECT['name']} job. "
+             "I'll have the team price it, schedule it, and write up the change order.")
 
     # 2. Coordinator logs the field change
     feed.add("coordinator", Status.WORKING,
-             "Logged the field change during the drywall phase. It needs pricing and a "
-             "schedule impact before we can issue a change order.")
+             "Logged the change. The window is a known size, so we can price and "
+             "schedule it now.")
 
-    # 3. Estimator: first pass -> oracle flags -> repair (live agent or scripted)
+    # 3. Estimator: first pass -> flag -> repair (live agent or scripted)
     est = _estimator_step(job, feed, live)
 
-    # 4. Scheduler: first pass -> oracle flags -> repair (live agent or scripted)
+    # 4. Scheduler: first pass -> flag -> repair (live agent or scripted)
     sch = _scheduler_step(job, est, feed, live)
 
-    # 5. Office Admin: change order + invoice + reminder
-    co = ChangeOrder("CO #001", job.id,
-                     "Add egress window to kitchen (framing, unit, flashing, drywall, paint)",
-                     cost_delta=est.total, schedule_delta_days=2)
+    # before -> after rollup (so the GC sees the change)
+    cost_before = PROJECT["cost_before"]
+    cost_after = round(cost_before + est.total, 2)
+    days_before = PROJECT["days_before"]
+    days_after = days_before + 2
+
+    # 5. Office Admin: a reviewable change order + invoice + reminder
+    co = ChangeOrder(
+        number="CO #001", job_id=job.id,
+        description=f"Add a {WINDOW_SIZE} to the kitchen: frame the rough opening, "
+                    "install and flash the unit, patch drywall, and paint.",
+        cost_delta=est.total, schedule_delta_days=2,
+        project_name=PROJECT["name"], project_address=PROJECT["address"],
+        client_name=PROJECT["client_name"], client_email=PROJECT["client_email"],
+        window_size=WINDOW_SIZE, date=CO_DATE,
+        line_items=[{"desc": l.description, "amount": l.line_total} for l in est.lines]
+                   + [{"desc": "Overhead & profit (20%)", "amount": round(est.total - est.subtotal, 2)}],
+        cost_before=cost_before, cost_after=cost_after,
+        days_before=days_before, days_after=days_after,
+    )
     inv = Invoice("INV-002", job.id,
-                  line_items=[{"desc": "Change Order #001 - egress window", "amount": est.total}],
-                  amount_due=est.total, note="Billed on owner approval of CO #001.")
-    rem = Reminder("Change Order #001 needs the owner's signature before work proceeds.",
+                  line_items=[{"desc": f"Change Order #001 - {WINDOW_SIZE}", "amount": est.total}],
+                  amount_due=est.total, note="Billed once the change order is approved.")
+    rem = Reminder("Change Order #001 is ready for your signature, then it goes to the client.",
                    due="today", owner_action_required=True)
     feed.add("office_admin", Status.DONE,
-             f"Drafted Change Order #001 (${est.total:,.0f}, +2 days) and the matching "
-             f"invoice. Flagged it for the owner's signature.",
+             f"Wrote up Change Order #001 for ${est.total:,.0f} and a matching invoice. "
+             "Ready for you to review and sign.",
              document={"type": "change_order", **_doc(co)})
-    feed.add("office_admin", Status.DONE, "Invoice ready.", document={"type": "invoice", **_doc(inv)})
-    feed.add("office_admin", Status.DONE, "Reminder set.", document={"type": "reminder", **_doc(rem)})
+    feed.add("office_admin", Status.DONE, "Invoice drafted.",
+             document={"type": "invoice", **_doc(inv)})
 
-    # 6. Office Manager reports back
+    # 6. Office Manager reports back, plain and short
     feed.add("office_manager", Status.DONE,
-             f"All set. The window change is priced at ${est.total:,.0f}, adds 2 days, and "
-             f"Change Order #001 is ready for your signature. You just need to sign.")
+             f"Done. The window adds ${est.total:,.0f} and 2 days. "
+             "Review the change order and sign, then I'll send it to the client.")
 
+    summary = {
+        "headline": f"Add a {WINDOW_SIZE}",
+        "cost_before": cost_before, "cost_after": cost_after, "cost_delta": est.total,
+        "days_before": days_before, "days_after": days_after, "days_delta": 2,
+        "needs_signature": True,
+    }
     documents = {"change_order": _doc(co), "invoice": _doc(inv), "reminder": _doc(rem)}
-    return _result(feed, est, sch, documents)
+    return _result(feed, est, sch, documents, summary)
 
 
 def _in_scope(message: str) -> bool:
@@ -282,9 +317,10 @@ def _in_scope(message: str) -> bool:
     return not any(w in m for w in out)
 
 
-def _result(feed: Feed, est, sch, documents) -> dict:
+def _result(feed: Feed, est, sch, documents, summary) -> dict:
     return {
         "scenario": "change_order",
+        "summary": summary,
         "events": [e.to_dict() for e in feed.events],
         "documents": documents,
         "estimate": _doc(est) if est else None,

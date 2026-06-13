@@ -161,7 +161,21 @@ class ChangeOrder:
     description: str
     cost_delta: float
     schedule_delta_days: int
-    status: str = "pending_signature"   # pending_signature | signed
+    status: str = "draft"          # draft | contractor_signed | client_approved
+    # reviewable-document fields (so the GC and the client can both approve)
+    project_name: str = ""
+    project_address: str = ""
+    client_name: str = ""
+    client_email: str = ""
+    window_size: str = ""
+    line_items: list = field(default_factory=list)   # [{desc, amount}]
+    date: str = ""
+    cost_before: float = 0.0
+    cost_after: float = 0.0
+    days_before: int = 0
+    days_after: int = 0
+    contractor_signature: str = ""
+    client_signature: str = ""
 
 
 @dataclass
