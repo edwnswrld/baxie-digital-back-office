@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Baxie — Digital Back Office</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #161616;
+    --orange: #FF5A1F;
+    --paper: #F4EFE3;
+    --paper-soft: #FBF7EC;
+    --paper-deep: #E8DFC9;
+    --rule: #C9BFA6;
+    --gray600: #2E2A22;
+    --success: #2F7A3E;
+    --warning: #E8B547;
+    --error: #C8341A;
+    --info: #2D5F8B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Archivo", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  .eyebrow {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 11px;
+    color: var(--orange);
+    font-weight: 500;
+  }
+
+  h1, h2, h3 {
+    font-family: "Archivo Black", "Archivo", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    border-bottom: 2px solid var(--ink);
+    background: var(--paper-soft);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand svg { display: block; }
+
+  .wordmark {
+    font-family: "Archivo Black", sans-serif;
+    font-size: 26px;
+    letter-spacing: -0.02em;
+    text-transform: lowercase;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .topbar .divider {
+    width: 1px;
+    align-self: stretch;
+    background: var(--rule);
+    margin: 0 4px;
+  }
+
+  .topbar .title-block { display: flex; flex-direction: column; gap: 4px; }
+  .topbar .title-block h1 { font-size: 16px; }
+  .topbar .spacer { flex: 1; }
+
+  /* ---------- Layout ---------- */
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 26px 28px 60px;
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 26px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .wrap { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Chat box ---------- */
+  .panel {
+    background: var(--paper-soft);
+    border: 1.5px solid var(--ink);
+    border-radius: 4px;
+  }
+
+  .chatbox { padding: 20px; }
+
+  .chatbox .eyebrow { margin-bottom: 10px; }
+
+  .chat-row { display: flex; gap: 10px; }
+
+  #message {
+    flex: 1;
+    font-family: "Archivo", sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1.5px solid var(--rule);
+    border-radius: 3px;
+    padding: 12px 14px;
+    resize: none;
+    min-height: 52px;
+    line-height: 1.4;
+  }
+  #message:focus {
+    outline: none;
+    border-color: var(--ink);
+  }
+  #message::placeholder { color: var(--gray600); opacity: 0.65; }
+
+  #send {
+    font-family: "Archivo", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--paper);
+    background: var(--orange);
+    border: 1.5px solid var(--ink);
+    border-radius: 3px;
+    padding: 0 22px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.05s ease, opacity 0.15s ease;
+  }
+  #send:hover { transform: translateY(-1px); }
+  #send:active { transform: translateY(0); }
+  #send:disabled { opacity: 0.45; cursor: default; transform: none; }
+
+  .chips { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .chip {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    background: var(--paper-deep);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 5px 12px;
+    cursor: pointer;
+    color: var(--gray600);
+    transition: background 0.12s ease, color 0.12s ease;
+  }
+  .chip:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  /* ---------- Feed ---------- */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 26px 4px 12px;
+  }
+  .section-head h2 { font-size: 14px; }
+
+  .feed { display: flex; flex-direction: column; gap: 12px; }
+
+  .feed-empty {
+    color: var(--gray600);
+    font-size: 14px;
+    padding: 22px;
+    border: 1.5px dashed var(--rule);
+    border-radius: 4px;
+    text-align: center;
+  }
+
+  .card {
+    background: var(--paper-soft);
+    border: 1.5px solid var(--ink);
+    border-left-width: 5px;
+    border-radius: 4px;
+    padding: 14px 16px;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: rise 0.32s ease forwards;
+  }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 7px;
+  }
+  .card .agent {
+    font-family: "Archivo", sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .card .role {
+    font-family: "JetBrains Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    color: var(--gray600);
+  }
+  .card .seq {
+    margin-left: auto;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: var(--rule);
+  }
+  .card .msg {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--gray600);
+  }
+  .card .doc-tag {
+    display: inline-block;
+    margin-top: 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--orange);
+  }
+
+  .badge {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    color: var(--paper);
+  }
+
+  /* status colors on card + badge */
+  .st-working { border-left-color: var(--info); }
+  .st-working .badge { background: var(--info); }
+  .st-delegating { border-left-color: var(--info); }
+  .st-delegating .badge { background: var(--info); }
+  .st-flagged { border-left-color: var(--warning); }
+  .st-flagged .badge { background: var(--warning); color: var(--ink); }
+  .st-repaired { border-left-color: var(--success); }
+  .st-repaired .badge { background: var(--success); }
+  .st-done { border-left-color: var(--ink); }
+  .st-done .badge { background: var(--ink); }
+  .st-declined { border-left-color: var(--error); }
+  .st-declined .badge { background: var(--error); }
+
+  /* ---------- Scoreboard ---------- */
+  .scoreboard {
+    margin-top: 14px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 4px;
+    padding: 14px 16px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+  .scoreboard .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--orange);
+  }
+  .scoreboard b { color: var(--orange); font-weight: 700; }
+
+  /* ---------- Documents panel ---------- */
+  .docs-panel { position: sticky; top: 22px; }
+  .docs-head { margin-bottom: 12px; }
+  .docs-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .docs-empty {
+    color: var(--gray600);
+    font-size: 13px;
+    padding: 22px;
+    border: 1.5px dashed var(--rule);
+    border-radius: 4px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .doc {
+    background: var(--paper-soft);
+    border: 1.5px solid var(--ink);
+    border-radius: 4px;
+    overflow: hidden;
+    opacity: 0;
+    animation: rise 0.32s ease forwards;
+  }
+  .doc-banner {
+    background: var(--paper-deep);
+    border-bottom: 1.5px solid var(--ink);
+    padding: 10px 14px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .doc-kind {
+    font-family: "Archivo Black", sans-serif;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .doc-number {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--gray600);
+  }
+  .doc-body { padding: 14px; }
+  .doc-desc { font-size: 14px; line-height: 1.5; color: var(--ink); margin-bottom: 12px; }
+
+  .doc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .doc-stat {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 9px 11px;
+  }
+  .doc-stat .k {
+    font-family: "JetBrains Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 9px;
+    color: var(--gray600);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .doc-stat .v {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .doc-stat .v.accent { color: var(--orange); }
+
+  .doc-lines { margin-top: 4px; }
+  .doc-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 13px;
+  }
+  .doc-line:last-child { border-bottom: none; }
+  .doc-line .amt { font-family: "JetBrains Mono", monospace; font-weight: 500; white-space: nowrap; }
+  .doc-total {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding-top: 10px;
+    border-top: 2px solid var(--ink);
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .doc-total .amt { color: var(--orange); }
+
+  .doc-note {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--gray600);
+    line-height: 1.5;
+  }
+
+  .doc-status {
+    display: inline-block;
+    margin-top: 12px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--ink);
+  }
+  .doc-status.pending { background: var(--warning); color: var(--ink); }
+  .doc-status.signed { background: var(--success); color: var(--paper); }
+
+  .doc-action {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .doc-action .due {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--ink);
+    background: var(--paper-deep);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 4px 9px;
+  }
+  .doc-action .owner {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--orange);
+  }
+
+  .err {
+    color: var(--error);
+    font-size: 13px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--error);
+    border-radius: 4px;
+    background: var(--paper-soft);
+    margin-top: 12px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============== TOP BAR ============== -->
+  <header class="topbar">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 100 100" aria-hidden="true">
+        <path d="M 0 0 L 68 0 L 100 32 L 100 100 L 0 100 Z" fill="#FF5A1F" />
+      </svg>
+      <span class="wordmark">baxie</span>
+    </div>
+    <div class="divider"></div>
+    <div class="title-block">
+      <span class="eyebrow">You run the jobsite. Your agents run the office.</span>
+      <h1>Digital Back Office</h1>
+    </div>
+    <div class="spacer"></div>
+  </header>
+
+  <!-- ============== MAIN ============== -->
+  <div class="wrap">
+
+    <!-- LEFT: chat + feed -->
+    <main>
+      <section class="panel chatbox">
+        <div class="eyebrow">Talk to your Office Manager</div>
+        <div class="chat-row">
+          <textarea id="message" rows="2"
+            placeholder="Tell your Office Manager... e.g. 'homeowner wants to add a window'"></textarea>
+          <button id="send">Send</button>
+        </div>
+        <div class="chips" id="chips">
+          <span class="chip" data-fill="Homeowner wants to add an egress window in the kitchen.">Add a window</span>
+          <span class="chip" data-fill="Homeowner asked to upgrade to quartz countertops.">Upgrade countertops</span>
+          <span class="chip" data-fill="Can you give the homeowner my home address and cell?">Out-of-scope ask</span>
+        </div>
+      </section>
+
+      <div class="section-head">
+        <h2>Activity Feed</h2>
+        <span class="eyebrow" id="feed-count"></span>
+      </div>
+      <div class="feed" id="feed">
+        <div class="feed-empty">Send a request above. Your crew goes to work and you watch it happen, one step at a time.</div>
+      </div>
+
+      <div class="scoreboard mono" id="scoreboard">
+        <span class="dot"></span>
+        <span id="scoreboard-text"></span>
+      </div>
+    </main>
+
+    <!-- RIGHT: documents -->
+    <aside class="docs-panel">
+      <div class="docs-head">
+        <span class="eyebrow">Paperwork dropped</span>
+        <h2 style="font-size:14px;margin-top:6px;">Documents</h2>
+      </div>
+      <div class="docs-list" id="docs">
+        <div class="docs-empty">Change orders, invoices, and reminders your crew produces will land here, ready for the homeowner to sign.</div>
+      </div>
+    </aside>
+
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STEP_MS = 600;
+  var els = {
+    message: document.getElementById("message"),
+    send: document.getElementById("send"),
+    chips: document.getElementById("chips"),
+    feed: document.getElementById("feed"),
+    feedCount: document.getElementById("feed-count"),
+    docs: document.getElementById("docs"),
+    scoreboard: document.getElementById("scoreboard"),
+    scoreboardText: document.getElementById("scoreboard-text"),
+  };
+
+  var DEFAULT_MSG = "Homeowner wants to add an egress window in the kitchen.";
+  var docsRendered = 0;
+
+  // -- helpers ---------------------------------------------------------- //
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function money(v) {
+    var num = Number(v) || 0;
+    var sign = num < 0 ? "-" : "";
+    return sign + "$" + Math.abs(num).toLocaleString("en-US", {
+      minimumFractionDigits: 2, maximumFractionDigits: 2
+    });
+  }
+
+  function clearFeed() {
+    els.feed.innerHTML = "";
+    els.docs.innerHTML = "";
+    docsRendered = 0;
+    els.scoreboard.style.display = "none";
+    els.feedCount.textContent = "";
+  }
+
+  // -- activity feed cards --------------------------------------------- //
+  var KNOWN_STATUS = {
+    working: 1, done: 1, flagged: 1, repaired: 1, delegating: 1, declined: 1
+  };
+
+  function renderEvent(ev) {
+    var status = (ev.status || "working").toLowerCase();
+    if (!KNOWN_STATUS[status]) status = "working";
+
+    var card = el("div", "card st-" + status);
+    var top = el("div", "card-top");
+    top.appendChild(el("span", "agent", ev.agent || "Crew"));
+    if (ev.role) top.appendChild(el("span", "role", ev.role));
+    top.appendChild(el("span", "badge", status));
+    if (ev.seq != null) top.appendChild(el("span", "seq", "#" + ev.seq));
+    card.appendChild(top);
+
+    card.appendChild(el("div", "msg", ev.message || ""));
+
+    if (ev.document) {
+      var kind = docKind(ev.document);
+      card.appendChild(el("div", "doc-tag", "Dropped: " + kind));
+      renderDocument(ev.document);
+    }
+
+    els.feed.appendChild(card);
+    els.feed.lastChild.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  // -- document type detection ----------------------------------------- //
+  function docKind(d) {
+    if (d == null) return "Document";
+    if (d.type === "estimate") return "Estimate";
+    if (d.type === "schedule") return "Schedule";
+    if ("cost_delta" in d || "schedule_delta_days" in d) return "Change Order";
+    if ("amount_due" in d || "line_items" in d) return "Invoice";
+    if ("due" in d || "owner_action_required" in d) return "Reminder";
+    return "Document";
+  }
+
+  function renderDocument(d) {
+    if (docsRendered === 0) els.docs.innerHTML = "";
+    docsRendered++;
+
+    var kind = docKind(d);
+    var doc = el("div", "doc");
+
+    var banner = el("div", "doc-banner");
+    banner.appendChild(el("span", "doc-kind", kind));
+    if (d.number) banner.appendChild(el("span", "doc-number", d.number));
+    doc.appendChild(banner);
+
+    var body = el("div", "doc-body");
+
+    if (kind === "Change Order") renderChangeOrder(body, d);
+    else if (kind === "Invoice") renderInvoice(body, d);
+    else if (kind === "Reminder") renderReminder(body, d);
+    else if (kind === "Estimate") renderEstimate(body, d);
+    else if (kind === "Schedule") renderSchedule(body, d);
+    else body.appendChild(el("div", "doc-desc", JSON.stringify(d)));
+
+    doc.appendChild(body);
+    els.docs.appendChild(doc);
+  }
+
+  function renderChangeOrder(body, d) {
+    if (d.description) body.appendChild(el("div", "doc-desc", d.description));
+
+    var grid = el("div", "doc-grid");
+    grid.appendChild(stat("Cost change", money(d.cost_delta), true));
+    var days = Number(d.schedule_delta_days) || 0;
+    grid.appendChild(stat("Schedule", (days >= 0 ? "+" : "") + days + (Math.abs(days) === 1 ? " day" : " days")));
+    body.appendChild(grid);
+
+    var status = (d.status || "pending_signature").toLowerCase();
+    var label = status === "signed" ? "Signed" : "Pending signature";
+    var chip = el("span", "doc-status " + (status === "signed" ? "signed" : "pending"), label);
+    body.appendChild(chip);
+  }
+
+  function renderInvoice(body, d) {
+    if (d.note) body.appendChild(el("div", "doc-desc", d.note));
+
+    var items = Array.isArray(d.line_items) ? d.line_items : [];
+    if (items.length) {
+      var lines = el("div", "doc-lines");
+      items.forEach(function (it) {
+        var row = el("div", "doc-line");
+        row.appendChild(el("span", null, it.desc || it.description || "Item"));
+        var amt = it.amount != null ? it.amount : it.amt;
+        row.appendChild(el("span", "amt", money(amt)));
+        lines.appendChild(row);
+      });
+      body.appendChild(lines);
+    }
+
+    var total = el("div", "doc-total");
+    total.appendChild(el("span", null, "Amount due"));
+    total.appendChild(el("span", "amt", money(d.amount_due)));
+    body.appendChild(total);
+  }
+
+  function renderReminder(body, d) {
+    if (d.text) body.appendChild(el("div", "doc-desc", d.text));
+    var action = el("div", "doc-action");
+    if (d.due) action.appendChild(el("span", "due", "Due " + d.due));
+    if (d.owner_action_required) action.appendChild(el("span", "owner", "Needs you"));
+    body.appendChild(action);
+  }
+
+  function renderEstimate(body, d) {
+    if (d.label) body.appendChild(el("div", "doc-desc", d.label));
+    var grid = el("div", "doc-grid");
+    grid.appendChild(stat("Line items", String(Array.isArray(d.lines) ? d.lines.length : 0)));
+    if (d.subtotal != null) grid.appendChild(stat("Subtotal", money(d.subtotal)));
+    if (d.total != null) grid.appendChild(stat("Total", money(d.total), true));
+    body.appendChild(grid);
+    body.appendChild(el("span", "doc-status signed", "Checker verified"));
+  }
+
+  function renderSchedule(body, d) {
+    if (d.label) body.appendChild(el("div", "doc-desc", d.label));
+    var grid = el("div", "doc-grid");
+    grid.appendChild(stat("Tasks", String(Array.isArray(d.tasks) ? d.tasks.length : 0)));
+    if (d.duration_days != null) grid.appendChild(stat("Duration", d.duration_days + " days", true));
+    body.appendChild(grid);
+    body.appendChild(el("span", "doc-status signed", "Checker verified"));
+  }
+
+  function stat(k, v, accent) {
+    var s = el("div", "doc-stat");
+    s.appendChild(el("span", "k", k));
+    s.appendChild(el("span", "v" + (accent ? " accent" : ""), v));
+    return s;
+  }
+
+  // -- streaming animation --------------------------------------------- //
+  function streamEvents(events, done) {
+    var i = 0;
+    function next() {
+      if (i >= events.length) { if (done) done(); return; }
+      renderEvent(events[i]);
+      i++;
+      els.feedCount.textContent = i + " / " + events.length;
+      setTimeout(next, STEP_MS);
+    }
+    next();
+  }
+
+  function showScoreboard(sb) {
+    if (!sb) return;
+    var text;
+    if (typeof sb === "string") {
+      text = sb;
+    } else if (sb.text) {
+      text = sb.text;
+    } else if (sb.correct != null && sb.total != null) {
+      text = "Self-graded: " + sb.correct + "/" + sb.total + " correct";
+      if (sb.score != null) text += "  (" + Math.round(sb.score * 100) + "%)";
+    } else if (sb.score != null) {
+      text = "Self-graded: " + Math.round(sb.score * 100) + "%";
+    } else {
+      text = "Self-graded run complete";
+    }
+    els.scoreboardText.innerHTML = text.replace(/(\d+\s*\/\s*\d+|\d+%)/g, "<b>$1</b>");
+    els.scoreboard.style.display = "flex";
+  }
+
+  function showError(msg) {
+    var box = el("div", "err", msg);
+    els.feed.appendChild(box);
+  }
+
+  // -- run ------------------------------------------------------------- //
+  var running = false;
+
+  function run(message) {
+    if (running) return;
+    running = true;
+    els.send.disabled = true;
+    clearFeed();
+    els.feed.appendChild(el("div", "feed-empty", "Your Office Manager is reading the request..."));
+
+    fetch("/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: message }),
+    })
+    .then(function (r) {
+      if (!r.ok) throw new Error("Server returned " + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      els.feed.innerHTML = "";
+      var events = (data && data.events) || [];
+      if (!events.length) {
+        showError("No activity came back from the crew.");
+        finish();
+        return;
+      }
+      streamEvents(events, function () {
+        showScoreboard(data.scoreboard);
+        // Render any documents bundle not already attached to events.
+        if (data.documents && docsRendered === 0) {
+          Object.keys(data.documents).forEach(function (k) {
+            renderDocument(data.documents[k]);
+          });
+        }
+        finish();
+      });
+    })
+    .catch(function (e) {
+      els.feed.innerHTML = "";
+      showError("Could not reach the back office: " + e.message);
+      finish();
+    });
+  }
+
+  function finish() {
+    running = false;
+    els.send.disabled = false;
+  }
+
+  // -- wire UI --------------------------------------------------------- //
+  els.send.addEventListener("click", function () {
+    var msg = els.message.value.trim() || DEFAULT_MSG;
+    run(msg);
+  });
+
+  els.message.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      els.send.click();
+    }
+  });
+
+  els.chips.addEventListener("click", function (e) {
+    var chip = e.target.closest(".chip");
+    if (!chip) return;
+    els.message.value = chip.getAttribute("data-fill") || "";
+    els.message.focus();
+  });
+
+  // Auto-run the hero scenario on load.
+  els.message.value = DEFAULT_MSG;
+  run(DEFAULT_MSG);
+})();
+</script>
+</body>
+</html>

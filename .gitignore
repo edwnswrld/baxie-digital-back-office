@@ -1,0 +1,22 @@
+# Secrets and Baxie-private material (never commit)
+.env
+.env.local
+private/
+baxie_*
+*_baxie.py
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Cache of agent runs (kept out of git; the deterministic hero run is regenerated)
+.cache/
+run_cache/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

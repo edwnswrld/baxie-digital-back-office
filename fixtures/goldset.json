@@ -1,0 +1,1918 @@
+[
+  {
+    "id": "est-clean-baseline",
+    "kind": "estimate",
+    "input": {
+      "job": {
+        "id": "JOB-KITCHEN-001",
+        "name": "Kitchen Remodel - 1423 Oak St (synthetic)",
+        "client_label": "Synthetic Homeowner A",
+        "baseline_contract": 68000.0,
+        "scope": [
+          {
+            "id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf"
+          },
+          {
+            "id": "S-03",
+            "description": "MEP rough-in for new layout",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf"
+          },
+          {
+            "id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf"
+          },
+          {
+            "id": "S-06",
+            "description": "Install cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf"
+          }
+        ],
+        "baseline_estimate": null,
+        "baseline_schedule": null
+      },
+      "estimate": {
+        "job_id": "JOB-KITCHEN-001",
+        "lines": [
+          {
+            "scope_id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 16,
+            "labor_rate": 70,
+            "material_cost": 450
+          },
+          {
+            "scope_id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf",
+            "labor_hours": 20,
+            "labor_rate": 75,
+            "material_cost": 900
+          },
+          {
+            "scope_id": "S-03",
+            "description": "MEP rough-in",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 40,
+            "labor_rate": 95,
+            "material_cost": 2200
+          },
+          {
+            "scope_id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf",
+            "labor_hours": 8,
+            "labor_rate": 55,
+            "material_cost": 320
+          },
+          {
+            "scope_id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf",
+            "labor_hours": 36,
+            "labor_rate": 65,
+            "material_cost": 1100
+          },
+          {
+            "scope_id": "S-06",
+            "description": "Cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 48,
+            "labor_rate": 80,
+            "material_cost": 6800
+          },
+          {
+            "scope_id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf",
+            "labor_hours": 24,
+            "labor_rate": 55,
+            "material_cost": 600
+          }
+        ],
+        "markup": 0.2,
+        "label": "clean"
+      }
+    },
+    "label": {
+      "ok": true,
+      "binding": null
+    }
+  },
+  {
+    "id": "est-clean-markup-25",
+    "kind": "estimate",
+    "input": {
+      "job": {
+        "id": "JOB-KITCHEN-001",
+        "name": "Kitchen Remodel - 1423 Oak St (synthetic)",
+        "client_label": "Synthetic Homeowner A",
+        "baseline_contract": 68000.0,
+        "scope": [
+          {
+            "id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf"
+          },
+          {
+            "id": "S-03",
+            "description": "MEP rough-in for new layout",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf"
+          },
+          {
+            "id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf"
+          },
+          {
+            "id": "S-06",
+            "description": "Install cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf"
+          }
+        ],
+        "baseline_estimate": null,
+        "baseline_schedule": null
+      },
+      "estimate": {
+        "job_id": "JOB-KITCHEN-001",
+        "lines": [
+          {
+            "scope_id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 16,
+            "labor_rate": 70,
+            "material_cost": 450
+          },
+          {
+            "scope_id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf",
+            "labor_hours": 20,
+            "labor_rate": 75,
+            "material_cost": 900
+          },
+          {
+            "scope_id": "S-03",
+            "description": "MEP rough-in",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 40,
+            "labor_rate": 95,
+            "material_cost": 2200
+          },
+          {
+            "scope_id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf",
+            "labor_hours": 8,
+            "labor_rate": 55,
+            "material_cost": 320
+          },
+          {
+            "scope_id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf",
+            "labor_hours": 36,
+            "labor_rate": 65,
+            "material_cost": 1100
+          },
+          {
+            "scope_id": "S-06",
+            "description": "Cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 48,
+            "labor_rate": 80,
+            "material_cost": 6800
+          },
+          {
+            "scope_id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf",
+            "labor_hours": 24,
+            "labor_rate": 55,
+            "material_cost": 600
+          }
+        ],
+        "markup": 0.25,
+        "label": "clean markup 25%"
+      }
+    },
+    "label": {
+      "ok": true,
+      "binding": null
+    }
+  },
+  {
+    "id": "est-clean-split-line",
+    "kind": "estimate",
+    "input": {
+      "job": {
+        "id": "JOB-KITCHEN-001",
+        "name": "Kitchen Remodel - 1423 Oak St (synthetic)",
+        "client_label": "Synthetic Homeowner A",
+        "baseline_contract": 68000.0,
+        "scope": [
+          {
+            "id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf"
+          },
+          {
+            "id": "S-03",
+            "description": "MEP rough-in for new layout",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf"
+          },
+          {
+            "id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf"
+          },
+          {
+            "id": "S-06",
+            "description": "Install cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf"
+          }
+        ],
+        "baseline_estimate": null,
+        "baseline_schedule": null
+      },
+      "estimate": {
+        "job_id": "JOB-KITCHEN-001",
+        "lines": [
+          {
+            "scope_id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 16,
+            "labor_rate": 70,
+            "material_cost": 450
+          },
+          {
+            "scope_id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf",
+            "labor_hours": 20,
+            "labor_rate": 75,
+            "material_cost": 900
+          },
+          {
+            "scope_id": "S-03",
+            "description": "MEP rough-in",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 40,
+            "labor_rate": 95,
+            "material_cost": 2200
+          },
+          {
+            "scope_id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf",
+            "labor_hours": 8,
+            "labor_rate": 55,
+            "material_cost": 320
+          },
+          {
+            "scope_id": "S-06",
+            "description": "Cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 48,
+            "labor_rate": 80,
+            "material_cost": 6800
+          },
+          {
+            "scope_id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf",
+            "labor_hours": 24,
+            "labor_rate": 55,
+            "material_cost": 600
+          },
+          {
+            "scope_id": "S-05",
+            "description": "Hang drywall",
+            "trade": "drywall",
+            "quantity": 220,
+            "unit": "sf",
+            "labor_hours": 18,
+            "labor_rate": 65,
+            "material_cost": 600
+          },
+          {
+            "scope_id": "S-05",
+            "description": "Finish + tape drywall",
+            "trade": "drywall",
+            "quantity": 200,
+            "unit": "sf",
+            "labor_hours": 18,
+            "labor_rate": 65,
+            "material_cost": 500
+          }
+        ],
+        "markup": 0.2,
+        "label": "clean split-line"
+      }
+    },
+    "label": {
+      "ok": true,
+      "binding": null
+    }
+  },
+  {
+    "id": "est-broken-double-count-framing",
+    "kind": "estimate",
+    "input": {
+      "job": {
+        "id": "JOB-KITCHEN-001",
+        "name": "Kitchen Remodel - 1423 Oak St (synthetic)",
+        "client_label": "Synthetic Homeowner A",
+        "baseline_contract": 68000.0,
+        "scope": [
+          {
+            "id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf"
+          },
+          {
+            "id": "S-03",
+            "description": "MEP rough-in for new layout",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf"
+          },
+          {
+            "id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf"
+          },
+          {
+            "id": "S-06",
+            "description": "Install cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf"
+          }
+        ],
+        "baseline_estimate": null,
+        "baseline_schedule": null
+      },
+      "estimate": {
+        "job_id": "JOB-KITCHEN-001",
+        "lines": [
+          {
+            "scope_id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 16,
+            "labor_rate": 70,
+            "material_cost": 450
+          },
+          {
+            "scope_id": "S-03",
+            "description": "MEP rough-in",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 40,
+            "labor_rate": 95,
+            "material_cost": 2200
+          },
+          {
+            "scope_id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf",
+            "labor_hours": 8,
+            "labor_rate": 55,
+            "material_cost": 320
+          },
+          {
+            "scope_id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf",
+            "labor_hours": 36,
+            "labor_rate": 65,
+            "material_cost": 1100
+          },
+          {
+            "scope_id": "S-06",
+            "description": "Cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 48,
+            "labor_rate": 80,
+            "material_cost": 6800
+          },
+          {
+            "scope_id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf",
+            "labor_hours": 24,
+            "labor_rate": 55,
+            "material_cost": 600
+          },
+          {
+            "scope_id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf",
+            "labor_hours": 20,
+            "labor_rate": 75,
+            "material_cost": 900
+          },
+          {
+            "scope_id": "S-02",
+            "description": "Reframe sink wall (dup)",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf",
+            "labor_hours": 20,
+            "labor_rate": 75,
+            "material_cost": 900
+          }
+        ],
+        "markup": 0.2,
+        "label": "DEMO double-counted framing"
+      }
+    },
+    "label": {
+      "ok": false,
+      "binding": "quantity_mismatch"
+    }
+  },
+  {
+    "id": "est-broken-missing-coverage",
+    "kind": "estimate",
+    "input": {
+      "job": {
+        "id": "JOB-KITCHEN-001",
+        "name": "Kitchen Remodel - 1423 Oak St (synthetic)",
+        "client_label": "Synthetic Homeowner A",
+        "baseline_contract": 68000.0,
+        "scope": [
+          {
+            "id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf"
+          },
+          {
+            "id": "S-03",
+            "description": "MEP rough-in for new layout",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf"
+          },
+          {
+            "id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf"
+          },
+          {
+            "id": "S-06",
+            "description": "Install cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf"
+          }
+        ],
+        "baseline_estimate": null,
+        "baseline_schedule": null
+      },
+      "estimate": {
+        "job_id": "JOB-KITCHEN-001",
+        "lines": [
+          {
+            "scope_id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 16,
+            "labor_rate": 70,
+            "material_cost": 450
+          },
+          {
+            "scope_id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf",
+            "labor_hours": 20,
+            "labor_rate": 75,
+            "material_cost": 900
+          },
+          {
+            "scope_id": "S-03",
+            "description": "MEP rough-in",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 40,
+            "labor_rate": 95,
+            "material_cost": 2200
+          },
+          {
+            "scope_id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf",
+            "labor_hours": 8,
+            "labor_rate": 55,
+            "material_cost": 320
+          },
+          {
+            "scope_id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf",
+            "labor_hours": 36,
+            "labor_rate": 65,
+            "material_cost": 1100
+          },
+          {
+            "scope_id": "S-06",
+            "description": "Cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 48,
+            "labor_rate": 80,
+            "material_cost": 6800
+          }
+        ],
+        "markup": 0.2,
+        "label": "missing paint line"
+      }
+    },
+    "label": {
+      "ok": false,
+      "binding": "coverage"
+    }
+  },
+  {
+    "id": "est-broken-rate-out-of-band",
+    "kind": "estimate",
+    "input": {
+      "job": {
+        "id": "JOB-KITCHEN-001",
+        "name": "Kitchen Remodel - 1423 Oak St (synthetic)",
+        "client_label": "Synthetic Homeowner A",
+        "baseline_contract": 68000.0,
+        "scope": [
+          {
+            "id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf"
+          },
+          {
+            "id": "S-03",
+            "description": "MEP rough-in for new layout",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf"
+          },
+          {
+            "id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf"
+          },
+          {
+            "id": "S-06",
+            "description": "Install cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf"
+          }
+        ],
+        "baseline_estimate": null,
+        "baseline_schedule": null
+      },
+      "estimate": {
+        "job_id": "JOB-KITCHEN-001",
+        "lines": [
+          {
+            "scope_id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 16,
+            "labor_rate": 70,
+            "material_cost": 450
+          },
+          {
+            "scope_id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf",
+            "labor_hours": 20,
+            "labor_rate": 75,
+            "material_cost": 900
+          },
+          {
+            "scope_id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf",
+            "labor_hours": 8,
+            "labor_rate": 55,
+            "material_cost": 320
+          },
+          {
+            "scope_id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf",
+            "labor_hours": 36,
+            "labor_rate": 65,
+            "material_cost": 1100
+          },
+          {
+            "scope_id": "S-06",
+            "description": "Cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 48,
+            "labor_rate": 80,
+            "material_cost": 6800
+          },
+          {
+            "scope_id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf",
+            "labor_hours": 24,
+            "labor_rate": 55,
+            "material_cost": 600
+          },
+          {
+            "scope_id": "S-03",
+            "description": "MEP rough-in",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls",
+            "labor_hours": 40,
+            "labor_rate": 400,
+            "material_cost": 2200
+          }
+        ],
+        "markup": 0.2,
+        "label": "absurd labor rate"
+      }
+    },
+    "label": {
+      "ok": false,
+      "binding": "rate_out_of_band"
+    }
+  },
+  {
+    "id": "sch-clean-baseline",
+    "kind": "schedule",
+    "input": {
+      "job": {
+        "id": "JOB-KITCHEN-001",
+        "name": "Kitchen Remodel - 1423 Oak St (synthetic)",
+        "client_label": "Synthetic Homeowner A",
+        "baseline_contract": 68000.0,
+        "scope": [
+          {
+            "id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf"
+          },
+          {
+            "id": "S-03",
+            "description": "MEP rough-in for new layout",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf"
+          },
+          {
+            "id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf"
+          },
+          {
+            "id": "S-06",
+            "description": "Install cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf"
+          }
+        ],
+        "baseline_estimate": null,
+        "baseline_schedule": null
+      },
+      "schedule": {
+        "job_id": "JOB-KITCHEN-001",
+        "tasks": [
+          {
+            "id": "T-01",
+            "name": "Demo + protect",
+            "trade": "site_prep",
+            "start_day": 0,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": []
+          },
+          {
+            "id": "T-02",
+            "name": "Reframe sink wall",
+            "trade": "rough_framing",
+            "start_day": 2,
+            "duration_days": 3,
+            "crew_size": 2,
+            "depends_on": [
+              "T-01"
+            ]
+          },
+          {
+            "id": "T-03",
+            "name": "MEP rough-in",
+            "trade": "mep_rough_in",
+            "start_day": 5,
+            "duration_days": 3,
+            "crew_size": 2,
+            "depends_on": [
+              "T-02"
+            ]
+          },
+          {
+            "id": "T-04",
+            "name": "Rough inspection",
+            "trade": "rough_inspection",
+            "start_day": 8,
+            "duration_days": 1,
+            "crew_size": 1,
+            "depends_on": [
+              "T-03"
+            ]
+          },
+          {
+            "id": "T-05",
+            "name": "Insulation",
+            "trade": "insulation",
+            "start_day": 9,
+            "duration_days": 1,
+            "crew_size": 2,
+            "depends_on": [
+              "T-04"
+            ]
+          },
+          {
+            "id": "T-06",
+            "name": "Hang + finish drywall",
+            "trade": "drywall",
+            "start_day": 10,
+            "duration_days": 4,
+            "crew_size": 3,
+            "depends_on": [
+              "T-05"
+            ]
+          },
+          {
+            "id": "T-07",
+            "name": "Cabinets + trim",
+            "trade": "finish_carpentry",
+            "start_day": 14,
+            "duration_days": 4,
+            "crew_size": 2,
+            "depends_on": [
+              "T-06"
+            ]
+          },
+          {
+            "id": "T-08",
+            "name": "Paint",
+            "trade": "paint",
+            "start_day": 18,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": [
+              "T-07"
+            ]
+          },
+          {
+            "id": "T-09",
+            "name": "Final inspection",
+            "trade": "final_inspection",
+            "start_day": 20,
+            "duration_days": 1,
+            "crew_size": 1,
+            "depends_on": [
+              "T-08"
+            ]
+          }
+        ],
+        "label": "clean"
+      }
+    },
+    "label": {
+      "ok": true,
+      "binding": null
+    }
+  },
+  {
+    "id": "sch-clean-longer-drywall",
+    "kind": "schedule",
+    "input": {
+      "job": {
+        "id": "JOB-KITCHEN-001",
+        "name": "Kitchen Remodel - 1423 Oak St (synthetic)",
+        "client_label": "Synthetic Homeowner A",
+        "baseline_contract": 68000.0,
+        "scope": [
+          {
+            "id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf"
+          },
+          {
+            "id": "S-03",
+            "description": "MEP rough-in for new layout",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf"
+          },
+          {
+            "id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf"
+          },
+          {
+            "id": "S-06",
+            "description": "Install cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf"
+          }
+        ],
+        "baseline_estimate": null,
+        "baseline_schedule": null
+      },
+      "schedule": {
+        "job_id": "JOB-KITCHEN-001",
+        "tasks": [
+          {
+            "id": "T-01",
+            "name": "Demo + protect",
+            "trade": "site_prep",
+            "start_day": 0,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": []
+          },
+          {
+            "id": "T-02",
+            "name": "Reframe sink wall",
+            "trade": "rough_framing",
+            "start_day": 2,
+            "duration_days": 3,
+            "crew_size": 2,
+            "depends_on": [
+              "T-01"
+            ]
+          },
+          {
+            "id": "T-03",
+            "name": "MEP rough-in",
+            "trade": "mep_rough_in",
+            "start_day": 5,
+            "duration_days": 3,
+            "crew_size": 2,
+            "depends_on": [
+              "T-02"
+            ]
+          },
+          {
+            "id": "T-04",
+            "name": "Rough inspection",
+            "trade": "rough_inspection",
+            "start_day": 8,
+            "duration_days": 1,
+            "crew_size": 1,
+            "depends_on": [
+              "T-03"
+            ]
+          },
+          {
+            "id": "T-05",
+            "name": "Insulation",
+            "trade": "insulation",
+            "start_day": 9,
+            "duration_days": 1,
+            "crew_size": 2,
+            "depends_on": [
+              "T-04"
+            ]
+          },
+          {
+            "id": "T-06",
+            "name": "Hang + finish drywall",
+            "trade": "drywall",
+            "start_day": 10,
+            "duration_days": 5,
+            "crew_size": 3,
+            "depends_on": [
+              "T-05"
+            ]
+          },
+          {
+            "id": "T-07",
+            "name": "Cabinets + trim",
+            "trade": "finish_carpentry",
+            "start_day": 15,
+            "duration_days": 4,
+            "crew_size": 2,
+            "depends_on": [
+              "T-06"
+            ]
+          },
+          {
+            "id": "T-08",
+            "name": "Paint",
+            "trade": "paint",
+            "start_day": 19,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": [
+              "T-07"
+            ]
+          },
+          {
+            "id": "T-09",
+            "name": "Final inspection",
+            "trade": "final_inspection",
+            "start_day": 21,
+            "duration_days": 1,
+            "crew_size": 1,
+            "depends_on": [
+              "T-08"
+            ]
+          }
+        ],
+        "label": "clean longer drywall"
+      }
+    },
+    "label": {
+      "ok": true,
+      "binding": null
+    }
+  },
+  {
+    "id": "sch-clean-bigger-crews",
+    "kind": "schedule",
+    "input": {
+      "job": {
+        "id": "JOB-KITCHEN-001",
+        "name": "Kitchen Remodel - 1423 Oak St (synthetic)",
+        "client_label": "Synthetic Homeowner A",
+        "baseline_contract": 68000.0,
+        "scope": [
+          {
+            "id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf"
+          },
+          {
+            "id": "S-03",
+            "description": "MEP rough-in for new layout",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf"
+          },
+          {
+            "id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf"
+          },
+          {
+            "id": "S-06",
+            "description": "Install cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf"
+          }
+        ],
+        "baseline_estimate": null,
+        "baseline_schedule": null
+      },
+      "schedule": {
+        "job_id": "JOB-KITCHEN-001",
+        "tasks": [
+          {
+            "id": "T-01",
+            "name": "Demo + protect",
+            "trade": "site_prep",
+            "start_day": 0,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": []
+          },
+          {
+            "id": "T-02",
+            "name": "Reframe sink wall",
+            "trade": "rough_framing",
+            "start_day": 2,
+            "duration_days": 3,
+            "crew_size": 2,
+            "depends_on": [
+              "T-01"
+            ]
+          },
+          {
+            "id": "T-03",
+            "name": "MEP rough-in",
+            "trade": "mep_rough_in",
+            "start_day": 5,
+            "duration_days": 3,
+            "crew_size": 2,
+            "depends_on": [
+              "T-02"
+            ]
+          },
+          {
+            "id": "T-04",
+            "name": "Rough inspection",
+            "trade": "rough_inspection",
+            "start_day": 8,
+            "duration_days": 1,
+            "crew_size": 2,
+            "depends_on": [
+              "T-03"
+            ]
+          },
+          {
+            "id": "T-05",
+            "name": "Insulation",
+            "trade": "insulation",
+            "start_day": 9,
+            "duration_days": 1,
+            "crew_size": 2,
+            "depends_on": [
+              "T-04"
+            ]
+          },
+          {
+            "id": "T-06",
+            "name": "Hang + finish drywall",
+            "trade": "drywall",
+            "start_day": 10,
+            "duration_days": 4,
+            "crew_size": 3,
+            "depends_on": [
+              "T-05"
+            ]
+          },
+          {
+            "id": "T-07",
+            "name": "Cabinets + trim",
+            "trade": "finish_carpentry",
+            "start_day": 14,
+            "duration_days": 4,
+            "crew_size": 2,
+            "depends_on": [
+              "T-06"
+            ]
+          },
+          {
+            "id": "T-08",
+            "name": "Paint",
+            "trade": "paint",
+            "start_day": 18,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": [
+              "T-07"
+            ]
+          },
+          {
+            "id": "T-09",
+            "name": "Final inspection",
+            "trade": "final_inspection",
+            "start_day": 20,
+            "duration_days": 1,
+            "crew_size": 2,
+            "depends_on": [
+              "T-08"
+            ]
+          }
+        ],
+        "label": "clean bigger crews"
+      }
+    },
+    "label": {
+      "ok": true,
+      "binding": null
+    }
+  },
+  {
+    "id": "sch-broken-window-framing-after-drywall",
+    "kind": "schedule",
+    "input": {
+      "job": {
+        "id": "JOB-KITCHEN-001",
+        "name": "Kitchen Remodel - 1423 Oak St (synthetic)",
+        "client_label": "Synthetic Homeowner A",
+        "baseline_contract": 68000.0,
+        "scope": [
+          {
+            "id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf"
+          },
+          {
+            "id": "S-03",
+            "description": "MEP rough-in for new layout",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf"
+          },
+          {
+            "id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf"
+          },
+          {
+            "id": "S-06",
+            "description": "Install cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf"
+          }
+        ],
+        "baseline_estimate": null,
+        "baseline_schedule": null
+      },
+      "schedule": {
+        "job_id": "JOB-KITCHEN-001",
+        "tasks": [
+          {
+            "id": "T-01",
+            "name": "Demo + protect",
+            "trade": "site_prep",
+            "start_day": 0,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": []
+          },
+          {
+            "id": "T-02",
+            "name": "Reframe sink wall",
+            "trade": "rough_framing",
+            "start_day": 2,
+            "duration_days": 3,
+            "crew_size": 2,
+            "depends_on": [
+              "T-01"
+            ]
+          },
+          {
+            "id": "T-03",
+            "name": "MEP rough-in",
+            "trade": "mep_rough_in",
+            "start_day": 5,
+            "duration_days": 3,
+            "crew_size": 2,
+            "depends_on": [
+              "T-02"
+            ]
+          },
+          {
+            "id": "T-04",
+            "name": "Rough inspection",
+            "trade": "rough_inspection",
+            "start_day": 8,
+            "duration_days": 1,
+            "crew_size": 1,
+            "depends_on": [
+              "T-03"
+            ]
+          },
+          {
+            "id": "T-05",
+            "name": "Insulation",
+            "trade": "insulation",
+            "start_day": 9,
+            "duration_days": 1,
+            "crew_size": 2,
+            "depends_on": [
+              "T-04"
+            ]
+          },
+          {
+            "id": "T-06",
+            "name": "Hang + finish drywall",
+            "trade": "drywall",
+            "start_day": 10,
+            "duration_days": 4,
+            "crew_size": 3,
+            "depends_on": [
+              "T-05"
+            ]
+          },
+          {
+            "id": "T-07",
+            "name": "Cabinets + trim",
+            "trade": "finish_carpentry",
+            "start_day": 14,
+            "duration_days": 4,
+            "crew_size": 2,
+            "depends_on": [
+              "T-06"
+            ]
+          },
+          {
+            "id": "T-08",
+            "name": "Paint",
+            "trade": "paint",
+            "start_day": 18,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": [
+              "T-07"
+            ]
+          },
+          {
+            "id": "T-09",
+            "name": "Final inspection",
+            "trade": "final_inspection",
+            "start_day": 20,
+            "duration_days": 1,
+            "crew_size": 1,
+            "depends_on": [
+              "T-08"
+            ]
+          },
+          {
+            "id": "T-10",
+            "name": "Frame new egress window",
+            "trade": "rough_framing",
+            "start_day": 16,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": []
+          }
+        ],
+        "label": "DEMO window framing after drywall"
+      }
+    },
+    "label": {
+      "ok": false,
+      "binding": "trade_inversion"
+    }
+  },
+  {
+    "id": "sch-broken-missing-inspection",
+    "kind": "schedule",
+    "input": {
+      "job": {
+        "id": "JOB-KITCHEN-001",
+        "name": "Kitchen Remodel - 1423 Oak St (synthetic)",
+        "client_label": "Synthetic Homeowner A",
+        "baseline_contract": 68000.0,
+        "scope": [
+          {
+            "id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf"
+          },
+          {
+            "id": "S-03",
+            "description": "MEP rough-in for new layout",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf"
+          },
+          {
+            "id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf"
+          },
+          {
+            "id": "S-06",
+            "description": "Install cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf"
+          }
+        ],
+        "baseline_estimate": null,
+        "baseline_schedule": null
+      },
+      "schedule": {
+        "job_id": "JOB-KITCHEN-001",
+        "tasks": [
+          {
+            "id": "T-01",
+            "name": "Demo + protect",
+            "trade": "site_prep",
+            "start_day": 0,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": []
+          },
+          {
+            "id": "T-02",
+            "name": "Reframe sink wall",
+            "trade": "rough_framing",
+            "start_day": 2,
+            "duration_days": 3,
+            "crew_size": 2,
+            "depends_on": [
+              "T-01"
+            ]
+          },
+          {
+            "id": "T-03",
+            "name": "MEP rough-in",
+            "trade": "mep_rough_in",
+            "start_day": 5,
+            "duration_days": 3,
+            "crew_size": 2,
+            "depends_on": [
+              "T-02"
+            ]
+          },
+          {
+            "id": "T-04",
+            "name": "Rough inspection",
+            "trade": "rough_inspection",
+            "start_day": 8,
+            "duration_days": 1,
+            "crew_size": 1,
+            "depends_on": [
+              "T-03"
+            ]
+          },
+          {
+            "id": "T-05",
+            "name": "Insulation",
+            "trade": "insulation",
+            "start_day": 9,
+            "duration_days": 1,
+            "crew_size": 2,
+            "depends_on": [
+              "T-04"
+            ]
+          },
+          {
+            "id": "T-06",
+            "name": "Hang + finish drywall",
+            "trade": "drywall",
+            "start_day": 10,
+            "duration_days": 4,
+            "crew_size": 3,
+            "depends_on": [
+              "T-05"
+            ]
+          },
+          {
+            "id": "T-07",
+            "name": "Cabinets + trim",
+            "trade": "finish_carpentry",
+            "start_day": 14,
+            "duration_days": 4,
+            "crew_size": 2,
+            "depends_on": [
+              "T-06"
+            ]
+          },
+          {
+            "id": "T-08",
+            "name": "Paint",
+            "trade": "paint",
+            "start_day": 18,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": [
+              "T-07"
+            ]
+          }
+        ],
+        "label": "missing final inspection"
+      }
+    },
+    "label": {
+      "ok": false,
+      "binding": "missing_inspection"
+    }
+  },
+  {
+    "id": "sch-broken-starts-before-prereq",
+    "kind": "schedule",
+    "input": {
+      "job": {
+        "id": "JOB-KITCHEN-001",
+        "name": "Kitchen Remodel - 1423 Oak St (synthetic)",
+        "client_label": "Synthetic Homeowner A",
+        "baseline_contract": 68000.0,
+        "scope": [
+          {
+            "id": "S-01",
+            "description": "Demo + site protection",
+            "trade": "site_prep",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-02",
+            "description": "Reframe sink wall",
+            "trade": "rough_framing",
+            "quantity": 24,
+            "unit": "lf"
+          },
+          {
+            "id": "S-03",
+            "description": "MEP rough-in for new layout",
+            "trade": "mep_rough_in",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-04",
+            "description": "Insulate exterior wall",
+            "trade": "insulation",
+            "quantity": 180,
+            "unit": "sf"
+          },
+          {
+            "id": "S-05",
+            "description": "Hang + finish drywall",
+            "trade": "drywall",
+            "quantity": 420,
+            "unit": "sf"
+          },
+          {
+            "id": "S-06",
+            "description": "Install cabinets + trim",
+            "trade": "finish_carpentry",
+            "quantity": 1,
+            "unit": "ls"
+          },
+          {
+            "id": "S-07",
+            "description": "Paint kitchen",
+            "trade": "paint",
+            "quantity": 420,
+            "unit": "sf"
+          }
+        ],
+        "baseline_estimate": null,
+        "baseline_schedule": null
+      },
+      "schedule": {
+        "job_id": "JOB-KITCHEN-001",
+        "tasks": [
+          {
+            "id": "T-01",
+            "name": "Demo + protect",
+            "trade": "site_prep",
+            "start_day": 0,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": []
+          },
+          {
+            "id": "T-02",
+            "name": "Reframe sink wall",
+            "trade": "rough_framing",
+            "start_day": 2,
+            "duration_days": 3,
+            "crew_size": 2,
+            "depends_on": [
+              "T-01"
+            ]
+          },
+          {
+            "id": "T-03",
+            "name": "MEP rough-in",
+            "trade": "mep_rough_in",
+            "start_day": 5,
+            "duration_days": 3,
+            "crew_size": 2,
+            "depends_on": [
+              "T-02"
+            ]
+          },
+          {
+            "id": "T-04",
+            "name": "Rough inspection",
+            "trade": "rough_inspection",
+            "start_day": 8,
+            "duration_days": 1,
+            "crew_size": 1,
+            "depends_on": [
+              "T-03"
+            ]
+          },
+          {
+            "id": "T-05",
+            "name": "Insulation",
+            "trade": "insulation",
+            "start_day": 9,
+            "duration_days": 1,
+            "crew_size": 2,
+            "depends_on": [
+              "T-04"
+            ]
+          },
+          {
+            "id": "T-06",
+            "name": "Hang + finish drywall",
+            "trade": "drywall",
+            "start_day": 9,
+            "duration_days": 4,
+            "crew_size": 3,
+            "depends_on": [
+              "T-05"
+            ]
+          },
+          {
+            "id": "T-07",
+            "name": "Cabinets + trim",
+            "trade": "finish_carpentry",
+            "start_day": 14,
+            "duration_days": 4,
+            "crew_size": 2,
+            "depends_on": [
+              "T-06"
+            ]
+          },
+          {
+            "id": "T-08",
+            "name": "Paint",
+            "trade": "paint",
+            "start_day": 18,
+            "duration_days": 2,
+            "crew_size": 2,
+            "depends_on": [
+              "T-07"
+            ]
+          },
+          {
+            "id": "T-09",
+            "name": "Final inspection",
+            "trade": "final_inspection",
+            "start_day": 20,
+            "duration_days": 1,
+            "crew_size": 1,
+            "depends_on": [
+              "T-08"
+            ]
+          }
+        ],
+        "label": "drywall starts before insulation done"
+      }
+    },
+    "label": {
+      "ok": false,
+      "binding": "starts_before_prereq"
+    }
+  }
+]
