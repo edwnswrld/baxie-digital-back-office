@@ -107,5 +107,5 @@ live API. The URL can also run live.
 - [SPEC.md](SPEC.md): the build spec
 - [rubric.md](rubric.md): the machine-verifiable definition of done
 - [docs/CREW.md](docs/CREW.md): each digital employee, what they can and cannot do
-- **TODO: live URL**: _(add deployed FastAPI URL here)_
+- **Live URL**: https://gc-back-office.vercel.app
 - **TODO: 1-min video**: _(add demo video link here)_
