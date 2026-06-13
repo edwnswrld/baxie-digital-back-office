@@ -41,6 +41,13 @@ def have_key() -> bool:
     return bool(os.environ.get("ANTHROPIC_API_KEY"))
 
 
+def agents_enabled() -> bool:
+    """Live agent calls (Haiku conversation + Opus reasoning) only run where this is
+    explicitly turned on. The public deployment never sets BAXIE_LIVE_AGENTS, so it
+    stays fully scripted: instant, free, and impossible to drain the org credits."""
+    return have_key() and os.environ.get("BAXIE_LIVE_AGENTS") == "1"
+
+
 @dataclass
 class Tool:
     name: str

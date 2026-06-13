@@ -8,7 +8,7 @@ never stalls on the public URL.
 
 from __future__ import annotations
 
-from agents.base import have_key
+from agents.base import agents_enabled
 
 HAIKU = "claude-haiku-4-5-20251001"
 
@@ -21,7 +21,7 @@ _SYSTEM = (
 
 
 def _haiku(prompt: str) -> str | None:
-    if not have_key():
+    if not agents_enabled():
         return None
     try:
         import anthropic

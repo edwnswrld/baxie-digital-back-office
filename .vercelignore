@@ -1,0 +1,8 @@
+# Never upload secrets or local-only files to the deployment.
+.env
+.env.local
+private/
+.vercel
+__pycache__/
+*.pyc
+.git

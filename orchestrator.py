@@ -241,7 +241,8 @@ def run_change_order(message: str = "", live: bool = False) -> dict:
     """Dispatch: live agents handle the real request; otherwise the deterministic
     window scenario. Any live failure falls back to the scripted demo, so the
     workspace always renders something."""
-    if live:
+    from agents.base import agents_enabled
+    if live and agents_enabled():
         try:
             return run_change_order_live(message)
         except Exception:

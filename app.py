@@ -34,8 +34,9 @@ async def run(request: Request):
         body = await request.json()
     except Exception:
         pass
+    from agents.base import agents_enabled
     message = (body or {}).get("message", "homeowner wants to add a window")
-    live = bool((body or {}).get("live")) and bool(os.environ.get("ANTHROPIC_API_KEY"))
+    live = bool((body or {}).get("live")) and agents_enabled()
     result = run_change_order(message, live=live)
     # attach the self-grading scoreboard if the gold set is built
     result["scoreboard"] = _scoreboard()
