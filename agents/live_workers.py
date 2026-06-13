@@ -104,7 +104,8 @@ def live_estimate(job: Job):
 # Scheduler
 # --------------------------------------------------------------------------- #
 
-def live_schedule(job: Job, estimate: Estimate, baseline_tasks: list[ScheduleTask]):
+def live_schedule(job: Job, estimate: Estimate, baseline_tasks: list[ScheduleTask],
+                  change_desc: str = "the change order"):
     """Run the real Scheduler agent. Returns (Schedule, attempts) or raises."""
     if not have_key():
         raise RuntimeError("no API key")
@@ -171,7 +172,8 @@ def live_schedule(job: Job, estimate: Estimate, baseline_tasks: list[ScheduleTas
     )
     import json
     user = (f"Existing baseline tasks:\n{json.dumps(base, indent=2)}\n\n"
-            f"Add tasks to frame and finish a new egress window. Submit your new tasks.")
+            f"Add the tasks needed for: {change_desc}. Keep trades in legal order. "
+            f"Submit your new tasks.")
 
     run_agent(system, user, tools=[tool])
     if state["schedule"] is None:

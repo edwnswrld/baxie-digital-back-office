@@ -91,18 +91,53 @@
 
   /* ---------- Layout ---------- */
   .wrap {
-    max-width: 1180px;
+    max-width: 760px;
     margin: 0 auto;
-    padding: 26px 28px 60px;
-    display: grid;
-    grid-template-columns: 1.35fr 1fr;
-    gap: 26px;
-    align-items: start;
+    padding: 22px 22px 80px;
+    display: block;
   }
+  .docs-panel { display: none; }
 
-  @media (max-width: 900px) {
-    .wrap { grid-template-columns: 1fr; }
+  /* sticky pinned result */
+  #summary { position: sticky; top: 0; z-index: 6; }
+  #summary > div { box-shadow: 0 6px 18px rgba(22,22,22,0.06); }
+
+  /* Office Manager chat bubble */
+  .bubble {
+    background: var(--paper-soft);
+    border: 1.5px solid var(--ink);
+    border-radius: 14px 14px 14px 4px;
+    padding: 12px 15px;
+    margin: 10px 0;
+    max-width: 85%;
   }
+  .bubble .who { font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 1px; text-transform: uppercase; color: var(--safety); margin-bottom: 4px; }
+  .bubble .text { font-size: 15px; color: var(--ink); line-height: 1.45; }
+
+  /* owner's own message, right-aligned */
+  .bubble.me { margin-left: auto; background: var(--ink); border-radius: 14px 14px 4px 14px; }
+  .bubble.me .text { color: var(--paper); }
+  .bubble.me .who { color: var(--paper-deep); }
+
+  /* collapsible crew work */
+  .work { border: 1px solid var(--rule); border-radius: 10px; margin: 8px 0; overflow: hidden; }
+  .work-head { display: flex; align-items: center; gap: 9px; padding: 10px 13px; cursor: pointer; }
+  .work-head:hover { background: var(--paper-soft); }
+  .work-head .nm { font-weight: 700; font-size: 13px; color: var(--ink); }
+  .work-head .rl { font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: .5px; text-transform: uppercase; color: var(--gray600); }
+  .work-head .sum { font-size: 13px; color: var(--gray600); flex: 1; }
+  .work-head .chev { font-size: 12px; color: var(--gray600); transition: transform .15s; }
+  .work.open .chev { transform: rotate(90deg); }
+  .work-detail { display: none; padding: 0 13px 12px; }
+  .work.open .work-detail { display: block; }
+  .work-line { font-size: 13px; color: var(--ink); padding: 4px 0; border-top: 1px dashed var(--rule); }
+  .work-line.flag { color: var(--warning-ink, #8a6d1a); }
+  .work .corrected { background: var(--success); color: var(--paper); font-size: 10px;
+    font-family: 'JetBrains Mono', monospace; padding: 2px 7px; border-radius: 4px; }
+  .what-changed { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--safety);
+    margin-bottom: 8px; letter-spacing: .3px; }
 
   /* ---------- Chat box ---------- */
   .panel {
@@ -612,28 +647,66 @@
     working: 1, done: 1, flagged: 1, repaired: 1, delegating: 1, declined: 1
   };
 
-  function renderEvent(ev) {
-    var status = (ev.status || "working").toLowerCase();
-    if (!KNOWN_STATUS[status]) status = "working";
+  // Group the raw event stream into conversation items: Office Manager messages
+  // are chat bubbles; each run of a worker's events collapses into one card.
+  function groupEvents(events) {
+    var items = [], cur = null;
+    events.forEach(function (ev) {
+      var isOM = (ev.role || "").toLowerCase().indexOf("office manager") >= 0;
+      if (isOM) {
+        if (cur) { items.push(cur); cur = null; }
+        items.push({ kind: "msg", ev: ev });
+        return;
+      }
+      if (!cur || cur.agent !== ev.agent) {
+        if (cur) items.push(cur);
+        cur = { kind: "work", agent: ev.agent, role: ev.role, lines: [], docs: [], corrected: false };
+      }
+      cur.lines.push(ev);
+      if ((ev.status || "") === "flagged") cur.corrected = true;
+      if (ev.document) cur.docs.push(ev.document);
+    });
+    if (cur) items.push(cur);
+    return items;
+  }
 
-    var card = el("div", "card st-" + status);
-    var top = el("div", "card-top");
-    top.appendChild(el("span", "agent", ev.agent || "Crew"));
-    if (ev.role) top.appendChild(el("span", "role", ev.role));
-    top.appendChild(el("span", "badge", status));
-    if (ev.seq != null) top.appendChild(el("span", "seq", "#" + ev.seq));
-    card.appendChild(top);
+  function renderMsg(ev, isMe) {
+    var b = el("div", "bubble" + (isMe ? " me" : ""));
+    b.appendChild(el("div", "who", isMe ? "You" : (ev.agent || "Avery") + " · Office Manager"));
+    b.appendChild(el("div", "text", ev.message || ""));
+    els.feed.appendChild(b);
+    b.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
 
-    card.appendChild(el("div", "msg", ev.message || ""));
+  function renderWork(item) {
+    var lastMsg = item.lines.length ? item.lines[item.lines.length - 1].message : "";
+    var w = el("div", "work");
+    var head = el("div", "work-head");
+    head.appendChild(el("span", "nm", item.agent || "Crew"));
+    head.appendChild(el("span", "rl", item.role || ""));
+    if (item.corrected) head.appendChild(el("span", "corrected", "self-corrected"));
+    head.appendChild(el("span", "sum", lastMsg));
+    head.appendChild(el("span", "chev", "▸"));
+    head.addEventListener("click", function () { w.classList.toggle("open"); });
+    w.appendChild(head);
+    var det = el("div", "work-detail");
+    item.lines.forEach(function (ev) {
+      det.appendChild(el("div", "work-line" + (ev.status === "flagged" ? " flag" : ""), ev.message || ""));
+    });
+    w.appendChild(det);
+    els.feed.appendChild(w);
+    // hero doc cards always visible (not collapsed)
+    item.docs.forEach(function (d) { renderDocument(d, els.feed); });
+    w.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
 
-    if (ev.document) {
-      var kind = docKind(ev.document);
-      card.appendChild(el("div", "doc-tag", "Dropped: " + kind));
-      renderDocument(ev.document);
+  function renderItem(item) {
+    if (item.kind === "msg") {
+      if ((item.ev.status || "") === "declined") { renderMsg(item.ev); return; }
+      renderMsg(item.ev);
+    } else {
+      renderWork(item);
     }
-
-    els.feed.appendChild(card);
-    els.feed.lastChild.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   // -- document type detection ----------------------------------------- //
@@ -647,10 +720,8 @@
     return "Document";
   }
 
-  function renderDocument(d) {
-    if (docsRendered === 0) els.docs.innerHTML = "";
+  function renderDocument(d, target) {
     docsRendered++;
-
     var kind = docKind(d);
     var doc = el("div", "doc");
     doc.setAttribute("data-doc", kind.toLowerCase().replace(/ /g, "_"));
@@ -661,6 +732,7 @@
     doc.appendChild(banner);
 
     var body = el("div", "doc-body");
+    if (d.what_changed) body.appendChild(el("div", "what-changed", "WHAT CHANGED: " + d.what_changed));
 
     if (kind === "Change Order") renderChangeOrder(body, d);
     else if (kind === "Invoice") renderInvoice(body, d);
@@ -670,7 +742,8 @@
     else body.appendChild(el("div", "doc-desc", JSON.stringify(d)));
 
     doc.appendChild(body);
-    els.docs.appendChild(doc);
+    (target || els.feed).appendChild(doc);
+    return doc;
   }
 
   function renderChangeOrder(body, d) {
@@ -864,12 +937,13 @@
 
   // -- streaming animation --------------------------------------------- //
   function streamEvents(events, done) {
+    var items = groupEvents(events);
     var i = 0;
     function next() {
-      if (i >= events.length) { if (done) done(); return; }
-      renderEvent(events[i]);
+      if (i >= items.length) { if (done) done(); return; }
+      renderItem(items[i]);
       i++;
-      els.feedCount.textContent = i + " / " + events.length;
+      els.feedCount.textContent = i + " / " + items.length;
       setTimeout(next, STEP_MS);
     }
     next();
@@ -907,7 +981,8 @@
     running = true;
     els.send.disabled = true;
     clearFeed();
-    els.feed.appendChild(el("div", "feed-empty", "Your Office Manager is reading the request..."));
+    renderMsg({ message: message }, true);
+    els.feed.appendChild(el("div", "feed-empty", "Avery is reading your message..."));
 
     fetch("/run", {
       method: "POST",
@@ -919,7 +994,9 @@
       return r.json();
     })
     .then(function (data) {
-      els.feed.innerHTML = "";
+      // keep the owner's message bubble; drop only the "reading..." placeholder
+      var empties = els.feed.querySelectorAll(".feed-empty");
+      for (var k = 0; k < empties.length; k++) empties[k].remove();
       lastEmail = (data.documents && data.documents.client_email) || null;
       renderSummary(data.summary);
       var events = (data && data.events) || [];

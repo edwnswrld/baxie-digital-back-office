@@ -193,7 +193,8 @@ def _estimator_step(job, feed, live):
     feed.add("estimator", Status.REPAIRED,
              f"Fixed and double-checked. The window adds ${est.total:,.0f}.",
              document={"type": "estimate", **_doc(est), "subtotal": est.subtotal,
-                       "total": est.total, "updated": True})
+                       "total": est.total, "updated": True,
+                       "what_changed": f"Added {len(est.lines)} line items for the window"})
     return est
 
 
@@ -230,13 +231,139 @@ def _scheduler_step(job, est, feed, live):
     feed.add("scheduler", Status.REPAIRED,
              f"Fixed. Framing now comes before drywall. Timeline goes from "
              f"{PROJECT['days_before']} to {days_after} days.",
-             document={"type": "schedule", **_doc(sch),
-                       "duration_days": days_after, "updated": True})
+             document={"type": "schedule", **_doc(sch), "duration_days": days_after,
+                       "updated": True,
+                       "what_changed": "Added window framing + drywall patch, +2 days"})
     return sch
 
 
 def run_change_order(message: str = "", live: bool = False) -> dict:
-    """Run the change-order scenario. Returns events + documents + final artifacts."""
+    """Dispatch: live agents handle the real request; otherwise the deterministic
+    window scenario. Any live failure falls back to the scripted demo, so the
+    workspace always renders something."""
+    if live:
+        try:
+            return run_change_order_live(message)
+        except Exception:
+            pass
+    return _run_scripted(message)
+
+
+def _plain(verdict: dict) -> str:
+    """Plain-English version of an oracle violation for the feed."""
+    b = verdict.get("binding")
+    return {
+        "quantity_mismatch": "I double-counted some of the work",
+        "coverage": "I missed pricing part of the scope",
+        "trade_inversion": "I had the work out of order",
+        "starts_before_prereq": "I scheduled a step before its prerequisite",
+        "prereq_later_trade": "I had a step depending on later work",
+        "missing_inspection": "I left out a required inspection",
+    }.get(b, "something didn't check out")
+
+
+def run_change_order_live(message: str) -> dict:
+    """Genuinely agentic path: the Office Manager turns the real request into scope,
+    then the Estimator and Scheduler price/schedule and self-correct on Opus."""
+    from agents.intake import derive_change, build_job
+    from agents.live_workers import live_estimate, live_schedule
+
+    feed = Feed()
+    change = derive_change(message)
+    if not change["in_scope"]:
+        feed.add("office_manager", Status.DECLINED,
+                 f'"{message}" is outside the back office. I handle estimating, '
+                 "scheduling, and paperwork for your jobs. Want me to take something else off your plate?")
+        return _result(feed, None, None, {}, None)
+
+    title = change["title"]
+    job = build_job(change["scope"])
+    feed.add("office_manager", Status.DELEGATING,
+             f"On it. {title}. I'll have the team price it, schedule it, and write up the change order.")
+    feed.add("coordinator", Status.WORKING, "Logged the change. Pricing and scheduling it now.")
+
+    # Estimator (live, self-correcting)
+    feed.add("estimator", Status.WORKING, f"Pricing: {title}.")
+    est, e_attempts = live_estimate(job)
+    for v in e_attempts:
+        if not v["ok"]:
+            feed.add("estimator", Status.FLAGGED, f"My own double-check caught a mistake: {_plain(v)}. Fixing it.")
+    feed.add("estimator", Status.REPAIRED if any(not a["ok"] for a in e_attempts) else Status.DONE,
+             f"Priced and double-checked. This adds ${est.total:,.0f}.",
+             document={"type": "estimate", **_doc(est), "subtotal": est.subtotal,
+                       "total": est.total, "updated": True})
+
+    # Scheduler (live, self-correcting)
+    feed.add("scheduler", Status.WORKING, "Fitting it into the timeline.")
+    sch, s_attempts = live_schedule(job, est, _baseline_tasks(), change_desc=title)
+    for v in s_attempts:
+        if not v["ok"]:
+            feed.add("scheduler", Status.FLAGGED, f"My check caught an out-of-order step: {_plain(v)}. Re-sequencing.")
+    baseline_days = Schedule("kitchen-1423", tasks=_baseline_tasks()).duration_days
+    days_delta = max(0, sch.duration_days - baseline_days)
+    cost_before = PROJECT["cost_before"]
+    cost_after = round(cost_before + est.total, 2)
+    days_before = PROJECT["days_before"]
+    days_after = days_before + days_delta
+    feed.add("scheduler", Status.REPAIRED if any(not a["ok"] for a in s_attempts) else Status.DONE,
+             f"Scheduled and double-checked. Timeline goes from {days_before} to {days_after} days.",
+             document={"type": "schedule", **_doc(sch), "duration_days": days_after, "updated": True})
+
+    # Office Admin: change order + invoice + client email
+    co = ChangeOrder(
+        number="CO #001", job_id=job.id, description=title,
+        cost_delta=est.total, schedule_delta_days=days_delta,
+        project_name=PROJECT["name"], project_address=PROJECT["address"],
+        client_name=PROJECT["client_name"], client_email=PROJECT["client_email"],
+        window_size=title, date=CO_DATE,
+        line_items=[{"desc": l.description, "amount": l.line_total} for l in est.lines]
+                   + [{"desc": "Overhead & profit (20%)", "amount": round(est.total - est.subtotal, 2)}],
+        cost_before=cost_before, cost_after=cost_after,
+        days_before=days_before, days_after=days_after,
+    )
+    inv = Invoice("INV-002", job.id,
+                  line_items=[{"desc": f"Change Order #001 - {title}", "amount": est.total}],
+                  amount_due=est.total, note="Billed once the change order is approved.")
+    rem = Reminder("Change Order #001 is ready for your signature, then it goes to the client.",
+                   due="today", owner_action_required=True)
+    email = EmailDraft(
+        to_name=PROJECT["client_name"], to_email=PROJECT["client_email"],
+        subject=f"Change Order #001 for your {PROJECT['name']} project",
+        body=(f"Hi {PROJECT['client_name'].split()[0]},\n\n"
+              f"We've prepared Change Order #001: {title}.\n\n"
+              f"  Added cost:   ${est.total:,.0f}\n"
+              f"  New project total: ${cost_after:,.0f}\n"
+              f"  Added time:   {days_delta} days (now {days_after} days)\n\n"
+              "Please review and approve at the link below so we can schedule the work.\n\n"
+              "[ Review & approve Change Order #001 ]\n\nThanks,\nYour project team"))
+    feed.add("office_admin", Status.DONE,
+             f"Wrote up Change Order #001 for ${est.total:,.0f}, the invoice, and a client "
+             "email. Ready for you to review and sign.",
+             document={"type": "change_order", **_doc(co)})
+    feed.add("office_admin", Status.DONE, "Invoice drafted.", document={"type": "invoice", **_doc(inv)})
+    feed.add("office_manager", Status.DONE,
+             f"Done. This adds ${est.total:,.0f} and {days_delta} days. Review and sign the "
+             "change order, then I'll email it to the client for their approval.")
+
+    assets = {
+        "estimate": {"before_total": cost_before, "after_total": cost_after,
+                     "added": [{"desc": l.description, "amount": l.line_total} for l in est.lines]},
+        "schedule": {"before_days": days_before, "after_days": days_after,
+                     "added": [{"name": t.name, "trade": t.trade.value} for t in sch.tasks
+                               if t.id.startswith("co")]},
+    }
+    summary = {
+        "headline": title, "cost_before": cost_before, "cost_after": cost_after,
+        "cost_delta": est.total, "days_before": days_before, "days_after": days_after,
+        "days_delta": days_delta, "needs_signature": True, "assets": assets,
+    }
+    documents = {"change_order": _doc(co), "invoice": _doc(inv),
+                 "reminder": _doc(rem), "client_email": _doc(email)}
+    return _result(feed, est, sch, documents, summary)
+
+
+def _run_scripted(message: str = "") -> dict:
+    """The deterministic window scenario. Returns events + documents + artifacts."""
     feed = Feed()
     job = _co_job()
 
@@ -246,20 +373,20 @@ def run_change_order(message: str = "", live: bool = False) -> dict:
                  f'"{message}" is outside the back office. I handle estimating, '
                  f'scheduling, and paperwork for your jobs. Want me to take that off your plate?')
         return _result(feed, None, None, {}, None)
-    feed.add("office_manager", Status.DELEGATING,
-             f"On it. Adding a {WINDOW_SIZE} to the {PROJECT['name']} job. "
-             "I'll have the team price it, schedule it, and write up the change order.")
+    from agents.converse import opener, closer
+    title = f"Add a {WINDOW_SIZE}"
+    feed.add("office_manager", Status.DELEGATING, opener(message or title, title))
 
     # 2. Coordinator logs the field change
     feed.add("coordinator", Status.WORKING,
              "Logged the change. The window is a known size, so we can price and "
              "schedule it now.")
 
-    # 3. Estimator: first pass -> flag -> repair (live agent or scripted)
-    est = _estimator_step(job, feed, live)
+    # 3. Estimator: first pass -> flag -> repair (deterministic)
+    est = _estimator_step(job, feed, False)
 
-    # 4. Scheduler: first pass -> flag -> repair (live agent or scripted)
-    sch = _scheduler_step(job, est, feed, live)
+    # 4. Scheduler: first pass -> flag -> repair (deterministic)
+    sch = _scheduler_step(job, est, feed, False)
 
     # before -> after rollup (so the GC sees the change)
     cost_before = PROJECT["cost_before"]
@@ -301,14 +428,14 @@ def run_change_order(message: str = "", live: bool = False) -> dict:
     feed.add("office_admin", Status.DONE,
              f"Wrote up Change Order #001 for ${est.total:,.0f}, the invoice, and a "
              "client email. Ready for you to review and sign.",
-             document={"type": "change_order", **_doc(co)})
-    feed.add("office_admin", Status.DONE, "Invoice drafted.",
-             document={"type": "invoice", **_doc(inv)})
+             document={"type": "change_order", **_doc(co),
+                       "what_changed": f"New {WINDOW_SIZE}, +${est.total:,.0f}, +2 days"})
+    feed.add("office_admin", Status.DONE, "Invoice updated to match.",
+             document={"type": "invoice", **_doc(inv),
+                       "what_changed": "Added the change-order amount"})
 
-    # 6. Office Manager reports back, plain and short
-    feed.add("office_manager", Status.DONE,
-             f"Done. The window adds ${est.total:,.0f} and 2 days. Review and sign the "
-             "change order, then I'll email it to the client for their approval.")
+    # 6. Office Manager reports back (natural, varied)
+    feed.add("office_manager", Status.DONE, closer(title, est.total, 2, cost_after))
 
     # before -> after asset snapshots (the GC can see what actually changed)
     assets = {
