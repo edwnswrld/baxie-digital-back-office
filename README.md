@@ -59,13 +59,13 @@ Two self-corrections, both confirmed by an oracle on screen:
 1. **Estimator.** First pass double-counts the framing labor for the rough opening
    (the header gets framed twice, about 6 hours and $540 of inflated labor).
    `check_estimate` flags `quantity_mismatch`. The Estimator repairs and re-submits.
-   Clean estimate, change-order delta around **$1,850**.
+   Clean estimate: subtotal around **$2,080**, **$2,496** with markup.
 2. **Scheduler.** First pass schedules the window rough-framing AFTER drywall.
    That is illegal: you cannot frame a new opening once the wall is closed.
    `check_schedule` flags `trade_inversion`. The Scheduler re-sequences framing
    before rough-in, inspection, and drywall. Valid schedule, **+2 days**.
 
-Then the Office Admin issues **Change Order #001** ($1,850, +2 days), an updated
+Then the Office Admin issues **Change Order #001** ($2,496, +2 days), an updated
 invoice, and a reminder that the change order needs the owner's signature. The owner
 signs.
 

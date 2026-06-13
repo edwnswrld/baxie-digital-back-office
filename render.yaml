@@ -1,0 +1,13 @@
+# Render blueprint. In Render: New > Blueprint > connect the public repo.
+services:
+  - type: web
+    name: baxie-digital-back-office
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      # Optional: set ANTHROPIC_API_KEY (org key) in the Render dashboard to enable
+      # live agent mode. The default scripted demo needs no key.

@@ -23,8 +23,16 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--message", default="homeowner wants to add a window")
     ap.add_argument("--live", action="store_true")
+    ap.add_argument("--serve", action="store_true", help="launch the workspace UI server")
+    ap.add_argument("--port", type=int, default=8000)
     ap.add_argument("--scenario", default="change_order")  # reserved
     args = ap.parse_args()
+
+    if args.serve:
+        import uvicorn
+        print(f"\n  Baxie Digital Back Office workspace -> http://127.0.0.1:{args.port}\n")
+        uvicorn.run("app:app", host="0.0.0.0", port=args.port)
+        return 0
 
     print("\n  BAXIE DIGITAL BACK OFFICE  —  you run the jobsite, your agents run the office\n")
     print(f'  owner: "{args.message}"\n')
