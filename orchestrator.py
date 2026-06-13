@@ -20,7 +20,7 @@ from enum import Enum
 
 from schemas import (
     Trade, ScopeItem, EstimateLine, Estimate, ScheduleTask, Schedule,
-    ChangeOrder, Invoice, Reminder, Job, AgentEvent, Status,
+    ChangeOrder, Invoice, Reminder, EmailDraft, Job, AgentEvent, Status,
 )
 from estimate_oracle import check_estimate
 from schedule_oracle import check_schedule
@@ -286,25 +286,51 @@ def run_change_order(message: str = "", live: bool = False) -> dict:
                   amount_due=est.total, note="Billed once the change order is approved.")
     rem = Reminder("Change Order #001 is ready for your signature, then it goes to the client.",
                    due="today", owner_action_required=True)
+    email = EmailDraft(
+        to_name=PROJECT["client_name"], to_email=PROJECT["client_email"],
+        subject=f"Change Order #001 for your {PROJECT['name']} project",
+        body=(f"Hi {PROJECT['client_name'].split()[0]},\n\n"
+              f"We've prepared Change Order #001 to add a {WINDOW_SIZE} to your kitchen.\n\n"
+              f"  Added cost:   ${est.total:,.0f}\n"
+              f"  New project total: ${cost_after:,.0f}\n"
+              f"  Added time:   2 days (now {days_after} days)\n\n"
+              "Please review and approve the change order at the link below so we can "
+              "schedule the work.\n\n"
+              "[ Review & approve Change Order #001 ]\n\n"
+              "Thanks,\nYour project team"))
     feed.add("office_admin", Status.DONE,
-             f"Wrote up Change Order #001 for ${est.total:,.0f} and a matching invoice. "
-             "Ready for you to review and sign.",
+             f"Wrote up Change Order #001 for ${est.total:,.0f}, the invoice, and a "
+             "client email. Ready for you to review and sign.",
              document={"type": "change_order", **_doc(co)})
     feed.add("office_admin", Status.DONE, "Invoice drafted.",
              document={"type": "invoice", **_doc(inv)})
 
     # 6. Office Manager reports back, plain and short
     feed.add("office_manager", Status.DONE,
-             f"Done. The window adds ${est.total:,.0f} and 2 days. "
-             "Review the change order and sign, then I'll send it to the client.")
+             f"Done. The window adds ${est.total:,.0f} and 2 days. Review and sign the "
+             "change order, then I'll email it to the client for their approval.")
+
+    # before -> after asset snapshots (the GC can see what actually changed)
+    assets = {
+        "estimate": {
+            "before_total": cost_before, "after_total": cost_after,
+            "added": [{"desc": l.description, "amount": l.line_total} for l in est.lines],
+        },
+        "schedule": {
+            "before_days": days_before, "after_days": days_after,
+            "added": [{"name": t.name, "trade": t.trade.value} for t in sch.tasks
+                      if t.id in ("co-fr", "co-dw")],
+        },
+    }
 
     summary = {
         "headline": f"Add a {WINDOW_SIZE}",
         "cost_before": cost_before, "cost_after": cost_after, "cost_delta": est.total,
         "days_before": days_before, "days_after": days_after, "days_delta": 2,
-        "needs_signature": True,
+        "needs_signature": True, "assets": assets,
     }
-    documents = {"change_order": _doc(co), "invoice": _doc(inv), "reminder": _doc(rem)}
+    documents = {"change_order": _doc(co), "invoice": _doc(inv),
+                 "reminder": _doc(rem), "client_email": _doc(email)}
     return _result(feed, est, sch, documents, summary)
 
 

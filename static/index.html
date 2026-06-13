@@ -521,6 +521,7 @@
 
   var DEFAULT_MSG = "Homeowner wants to add an egress window in the kitchen.";
   var docsRendered = 0;
+  var lastEmail = null;
 
   // -- helpers ---------------------------------------------------------- //
   function el(tag, cls, text) {
@@ -576,6 +577,20 @@
     row.appendChild(stat("Project cost", money(s.cost_before), money(s.cost_after), "+" + money(s.cost_delta)));
     row.appendChild(stat("Timeline", s.days_before + " days", s.days_after + " days", "+" + s.days_delta + " days"));
     wrap.appendChild(row);
+
+    // before -> after assets: what actually changed in the estimate and schedule
+    if (s.assets) {
+      var det = sty(el("div"), "margin-top:14px;border-top:1px solid " + RULE + ";padding-top:12px;font-size:12px;color:" + G6 + ";");
+      var estAdded = (s.assets.estimate && s.assets.estimate.added) || [];
+      var schAdded = (s.assets.schedule && s.assets.schedule.added) || [];
+      det.appendChild(sty(el("div", null, "Estimate updated: " + estAdded.length +
+        " new line items (framing, the unit, flashing, drywall, paint)"),
+        "margin-bottom:4px;"));
+      det.appendChild(sty(el("div", null, "Schedule updated: added " +
+        schAdded.map(function (t) { return t.name; }).join(", ")), ""));
+      wrap.appendChild(det);
+    }
+
     if (s.needs_signature) {
       var act = sty(el("div"), "margin-top:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;");
       var btn = sty(el("button", null, "Review & sign the change order"),
@@ -703,12 +718,18 @@
     }
 
     // e-signature: contractor signs, then client approves
+    var btnDark = "background:" + INK + ";color:" + PS + ";border:none;border-radius:6px;padding:9px 14px;font-weight:700;cursor:pointer;font-family:'Archivo',sans-serif;font-size:12px;";
+    var btnOutline = "background:" + PS + ";color:" + INK + ";border:1.5px solid " + INK + ";border-radius:6px;padding:8px 13px;font-weight:700;cursor:pointer;font-family:'Archivo',sans-serif;font-size:12px;";
+    var btnOrange = "background:" + OR + ";color:" + PS + ";border:none;border-radius:6px;padding:9px 14px;font-weight:700;cursor:pointer;font-family:'Archivo',sans-serif;font-size:12px;";
+
     var sig = sty(el("div"), "margin-top:14px;border-top:1px solid " + RULE + ";padding-top:12px;");
+    var emailOpen = false;
     function renderSig() {
       sig.innerHTML = "";
+
+      // Step 1 — contractor signs
       if (!d.status || d.status === "draft") {
-        var b = sty(el("button", null, "✍  Sign as contractor"),
-          "background:" + INK + ";color:" + PS + ";border:none;border-radius:6px;padding:9px 14px;font-weight:700;cursor:pointer;font-family:'Archivo',sans-serif;font-size:12px;");
+        var b = sty(el("button", null, "✍  Sign as contractor"), btnDark);
         b.addEventListener("click", function () {
           d.status = "contractor_signed";
           d.contractor_signature = "Signed electronically · " + new Date().toLocaleString();
@@ -717,22 +738,60 @@
         sig.appendChild(b);
         return;
       }
+
       sig.appendChild(sty(el("div", null, "✓ Signed by contractor"),
         "color:" + OK + ";font-weight:700;font-size:13px;"));
       sig.appendChild(sty(el("div", null, d.contractor_signature || ""),
         "font-family:'JetBrains Mono',monospace;font-size:10px;color:" + G6 + ";margin-bottom:10px;"));
-      if (d.status === "client_approved") {
-        sig.appendChild(sty(el("div", null, "✓ Approved by client — " + (d.client_name || "")),
-          "color:" + OK + ";font-weight:700;font-size:13px;"));
-      } else {
-        sig.appendChild(sty(el("div", null, "Sent to " + (d.client_name || "client") +
-          " (" + (d.client_email || "") + ") for approval"),
-          "color:" + G6 + ";font-size:12px;margin-bottom:6px;"));
-        var ab = sty(el("button", null, "Mark client approved"),
-          "background:" + PS + ";color:" + INK + ";border:1.5px solid " + INK + ";border-radius:6px;padding:7px 12px;font-weight:700;cursor:pointer;font-family:'Archivo',sans-serif;font-size:12px;");
-        ab.addEventListener("click", function () { d.status = "client_approved"; renderSig(); });
-        sig.appendChild(ab);
+
+      // Step 2 — review the email, then send it to the client
+      if (d.status === "contractor_signed") {
+        sig.appendChild(sty(el("div", null, "Next: review the email and send it to your client to approve and sign."),
+          "font-size:12px;color:" + G6 + ";margin-bottom:8px;"));
+        var rev = sty(el("button", null, emailOpen ? "Hide email" : "Review email to client"), btnOutline);
+        rev.addEventListener("click", function () { emailOpen = !emailOpen; renderSig(); });
+        sig.appendChild(rev);
+        if (emailOpen && lastEmail) {
+          var box = sty(el("div"), "margin-top:10px;background:#FBF7EC;border:1px solid " + RULE + ";border-radius:7px;padding:12px;");
+          box.appendChild(sty(el("div", null, "To: " + lastEmail.to_name + " <" + lastEmail.to_email + ">"),
+            "font-size:11px;color:" + G6 + ";"));
+          box.appendChild(sty(el("div", null, "Subject: " + lastEmail.subject),
+            "font-size:12px;font-weight:700;margin:4px 0 8px;color:" + INK + ";"));
+          var ta = el("textarea"); ta.value = lastEmail.body;
+          sty(ta, "width:100%;min-height:150px;border:1px solid " + RULE + ";border-radius:6px;padding:8px;font-family:'Archivo',sans-serif;font-size:12px;color:" + INK + ";background:#F4EFE3;box-sizing:border-box;");
+          box.appendChild(ta);
+          var send = sty(el("button", null, "Send to client"), btnOrange + "margin-top:8px;");
+          send.addEventListener("click", function () {
+            lastEmail.body = ta.value; lastEmail.sent = true;
+            d.status = "sent_to_client"; emailOpen = false; renderSig();
+          });
+          box.appendChild(send);
+          sig.appendChild(box);
+        }
+        return;
       }
+
+      // Step 3 — emailed, awaiting the client's signature
+      sig.appendChild(sty(el("div", null, "✓ Emailed to " + (d.client_name || "client") +
+        " (" + (d.client_email || "") + ")"),
+        "color:" + OK + ";font-weight:700;font-size:13px;margin-bottom:8px;"));
+      if (d.status === "client_approved") {
+        sig.appendChild(sty(el("div", null, "✓ Approved & signed by client — " + (d.client_name || "")),
+          "color:" + OK + ";font-weight:700;font-size:13px;"));
+        if (d.client_signature)
+          sig.appendChild(sty(el("div", null, d.client_signature),
+            "font-family:'JetBrains Mono',monospace;font-size:10px;color:" + G6 + ";"));
+        return;
+      }
+      sig.appendChild(sty(el("div", null, "Waiting on the client to review and sign."),
+        "font-size:12px;color:" + G6 + ";margin-bottom:6px;"));
+      var cb = sty(el("button", null, "Client: review & sign"), btnOutline);
+      cb.addEventListener("click", function () {
+        d.status = "client_approved";
+        d.client_signature = "Signed by client · " + new Date().toLocaleString();
+        renderSig();
+      });
+      sig.appendChild(cb);
     }
     renderSig();
     body.appendChild(sig);
@@ -861,6 +920,7 @@
     })
     .then(function (data) {
       els.feed.innerHTML = "";
+      lastEmail = (data.documents && data.documents.client_email) || null;
       renderSummary(data.summary);
       var events = (data && data.events) || [];
       if (!events.length) {

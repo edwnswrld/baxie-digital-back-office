@@ -194,6 +194,15 @@ class Reminder:
     owner_action_required: bool = True
 
 
+@dataclass
+class EmailDraft:
+    to_name: str
+    to_email: str
+    subject: str
+    body: str
+    sent: bool = False
+
+
 # --------------------------------------------------------------------------- #
 # The job + a change-order event
 # --------------------------------------------------------------------------- #
